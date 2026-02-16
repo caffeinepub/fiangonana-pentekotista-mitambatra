@@ -2,11 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-in-the-attendance-presence-screen-trigger-an-in-app-notification-when-any-member-reaches-3-consecutive-absences-based-on-the-most-recent-attendance-records-in-chronological-order-for-the-currently-selected-section-the-notification-message-must-use-this-exact-template-and-insert-the-member-s-full-name-deraina-jesosy-mila-mamangy-an-i-member-name-ianareo-komity-mifalia-ao-amin-ny-tompo",
-      "featureTitle": "In the Attendance (Presence) screen, trigger an in-app notification when any member reaches 3 consecutive absences (based on the most recent attendance records in chronological order for the currently selected section). The notification message must use this exact template and insert the member’s full name: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+      "featureId": "feature-fix-the-startup-failure-that-shows-the-something-went-wrong-startup-screen-by-ensuring-actor-initialization-cannot-throw-unhandled-errors-during-app-boot-including-the-access-control-initialization-call-if-initialization-fails-surface-the-actual-error-to-the-ui-layer-and-console-rather-than-leaving-the-app-stuck-in-a-generic-startup-failure-state",
+      "featureTitle": "Fix the startup failure that shows the \"Something went wrong\" startup screen by ensuring actor initialization cannot throw unhandled errors during app boot (including the access-control initialization call). If initialization fails, surface the actual error to the UI layer (and console) rather than leaving the app stuck in a generic startup failure state.",
       "files": [
-        "frontend/src/pages/AttendancePage.tsx",
-        "frontend/src/utils/attendanceConsecutiveAbsence.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/hooks/useSafeActor.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -17,7 +18,68 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-21"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-the-startuperrorscreen-flow-so-the-retry-action-fully-retries-startup-by-re-initializing-both-the-backend-actor-and-the-profile-query-not-only-refetching-the-profile",
+      "featureTitle": "Improve the StartupErrorScreen flow so the Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/StartupErrorScreen.tsx",
+        "frontend/src/hooks/useStartupRetry.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-change-any-startup-loading-user-facing-text-that-is-currently-in-french-e-g-chargement-to-english",
+      "featureTitle": "Change any startup/loading user-facing text that is currently in French (e.g., \"Chargement...\") to English.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-minimal-startup-diagnostics-to-help-identify-future-boot-failures-when-the-startup-error-screen-is-shown-include-a-compact-user-safe-error-summary-no-secrets-tokens-and-always-log-the-full-error-to-the-browser-console",
+      "featureTitle": "Add minimal startup diagnostics to help identify future boot failures: when the startup error screen is shown, include a compact, user-safe error summary (no secrets/tokens), and always log the full error to the browser console.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/StartupErrorScreen.tsx",
+        "frontend/src/utils/startupDiagnostics.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

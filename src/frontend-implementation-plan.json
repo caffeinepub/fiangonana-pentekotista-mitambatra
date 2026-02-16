@@ -1,28 +1,103 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Attendance: in-app notification on 3 consecutive absences",
+  "title": "Harden startup initialization, improve retry, and add safe diagnostics",
   "requirements": [
     {
-      "id": "REQ-21",
-      "summary": "Show an in-app notification on the Attendance screen when a member reaches 3 consecutive absences in the current section after saving an attendance record.",
+      "id": "REQ-1",
+      "summary": "Prevent unhandled startup initialization errors and surface real initialization failures (including access-control init) without trapping on missing admin token",
       "acceptanceCriteria": [
-        "When the user creates or updates an attendance record in AttendancePage, the app evaluates consecutive absences per member using the section’s saved attendance records sorted by date ascending (oldest -> newest).",
-        "If a member is marked Absent in the last 3 consecutive attendance records for that section, an in-app notification (e.g., a toast/alert) is displayed containing the exact template text with <member name> replaced by the member’s full name.",
-        "If multiple members satisfy the condition after save, the app shows a notification for each affected member (or a single notification that clearly lists each affected member with the template text), without crashing.",
-        "No notification is shown for members who have fewer than 3 consecutive absences, or whose absence streak is broken by a Present entry in between.",
-        "The detection is scoped to the currently selected section (no cross-section data is considered)."
+        "Loading the draft URL no longer immediately shows the startup error screen on a healthy network.",
+        "If backend/agent/actor initialization fails, the error is captured (no unhandled promise rejection) and is available to display/log for debugging.",
+        "The app does not trap solely because an admin token is missing/empty; startup works without providing any admin token."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/attendanceConsecutiveAbsence.ts",
+          "path": "frontend/src/hooks/useSafeActor.ts",
           "operation": "create",
-          "description": "Add a small utility that, given the current section’s attendance records and members, sorts records by date ascending (oldest -> newest), computes each member’s last-3 statuses, and returns the list of members (with fullName) who are Absent in the last 3 consecutive records."
+          "description": "Create a wrapper actor hook that composes the backend connection setup but adds: (1) explicit try/catch around actor creation and access-control initialization, (2) skipping access-control initialization when the admin token is missing/empty, (3) an exposed initialization error for the UI layer, and (4) a re-initialization trigger mechanism (e.g., attempt counter) to force a fresh actor boot. Ensure behavior aligns with the authorization component expectations for access-control initialization. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/pages/AttendancePage.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "After a successful create/update in handleSubmit, re-evaluate consecutive absences using the section’s attendance records in chronological order (including the just-saved record by merging it into the in-memory list), and display an in-app toast notification (via the existing sonner toast usage) for each affected member using the exact template: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\" scoped to currentSection only."
+          "description": "Update queries that currently depend on useActor() to depend on the new useSafeActor() hook so that startup failures can be detected and surfaced consistently, and so query enabling reflects the safe actor readiness state."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Switch startup gating logic (AuthenticatedGate) to use the safe actor hook and display a startup error screen with the actual captured initialization/profile error rather than a generic failure state. Ensure actor initialization errors are not treated as a permanent stuck state and are visible for debugging."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Make StartupErrorScreen Retry fully re-run startup by reinitializing actor and then refetching the profile",
+      "acceptanceCriteria": [
+        "Tapping Retry triggers a fresh actor initialization attempt and then re-runs the user profile fetch.",
+        "If the initial failure was transient (e.g., a temporary agent/replica error), Retry can recover without a hard refresh.",
+        "Retry does not require navigating away or clearing storage manually."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useStartupRetry.ts",
+          "operation": "create",
+          "description": "Add a small orchestration hook used by startup gates to implement a single Retry action that (1) triggers a fresh actor initialization attempt (via the safe actor hook re-init trigger) and then (2) re-runs the current user profile query once the actor is ready."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Update StartupErrorScreen wiring so Retry calls the startup retry orchestrator (fresh actor init + profile refetch), rather than only refetching the profile."
+        },
+        {
+          "path": "frontend/src/components/StartupErrorScreen.tsx",
+          "operation": "modify",
+          "description": "Extend the component props to support a disabled/loading Retry state while a retry is in progress, to avoid double-submits and to reflect that a full startup re-attempt is underway."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Change French startup/loading text to English",
+      "acceptanceCriteria": [
+        "All loading states shown during app startup use English text (e.g., \"Loading...\").",
+        "No French strings remain in the startup gates (AuthGate/AuthenticatedGate) loading UI."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Replace French startup loading copy (e.g., \"Chargement...\") with English equivalents (e.g., \"Loading...\") in both AuthGate and AuthenticatedGate loading UI."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Add minimal, user-safe startup diagnostics with sanitized UI summary and console logging",
+      "acceptanceCriteria": [
+        "When startup fails, the UI shows a short error summary (e.g., \"Initialization failed\" + a sanitized message).",
+        "No secret values (e.g., any admin token) are rendered to the screen or logged.",
+        "The console contains enough detail (stack/message) to debug the root cause."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/startupDiagnostics.ts",
+          "operation": "create",
+          "description": "Add utilities to normalize unknown thrown values into an Error-like shape and to sanitize error messages for display/logging (redact any occurrences of secret/token-like parameters such as caffeineAdminToken/caffeineAdminToken-like patterns). Provide helpers for producing a compact user-safe summary and a console-safe detailed log payload."
+        },
+        {
+          "path": "frontend/src/components/StartupErrorScreen.tsx",
+          "operation": "modify",
+          "description": "Update the startup error UI to render a compact, user-safe error summary (sanitized) when present, while keeping the overall screen minimal and readable. Ensure no sensitive values are shown."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Pass captured startup errors (actor init error or profile query error) into StartupErrorScreen as sanitized summaries, and ensure the full (sanitized) error detail is always logged to the browser console when the startup error screen is shown."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Add global startup diagnostics handlers for window 'unhandledrejection' and 'error' that log sanitized details to the console (without rendering secrets), to prevent silent failures during boot from being missed."
         }
       ]
     }

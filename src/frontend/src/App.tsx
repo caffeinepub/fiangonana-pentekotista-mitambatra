@@ -12,32 +12,101 @@ import AppLayout from './components/layout/AppLayout';
 import { SectionProvider } from './contexts/SectionContext';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
+import StartupErrorScreen from './components/StartupErrorScreen';
+import { useSafeActor } from './hooks/useSafeActor';
+import { useStartupRetry } from './hooks/useStartupRetry';
+import { getUserSafeErrorSummary, logStartupError } from './utils/startupDiagnostics';
+import { useState, useEffect } from 'react';
 
-function AuthGate({ children }: { children: React.ReactNode }) {
-  const { identity, isInitializing } = useInternetIdentity();
-  const { data: profile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+function AuthenticatedGate({ children }: { children: React.ReactNode }) {
+  const { actor, isFetching: actorFetching, isError: actorError, error: actorInitError } = useSafeActor();
+  const { data: profile, isLoading: profileLoading, isFetched, error: profileError } = useGetCallerUserProfile();
+  const { retry } = useStartupRetry();
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  if (isInitializing || profileLoading) {
+  // Determine if there's a startup failure
+  const actorFailed = actorError && !actorFetching;
+  const profileFailed = profileError && isFetched;
+  const hasStartupError = actorFailed || profileFailed;
+
+  // Log errors to console when they occur
+  useEffect(() => {
+    if (actorInitError) {
+      logStartupError('Actor Initialization', actorInitError);
+    }
+  }, [actorInitError]);
+
+  useEffect(() => {
+    if (profileError) {
+      logStartupError('Profile Query', profileError);
+    }
+  }, [profileError]);
+
+  // Show error screen if startup failed
+  if (hasStartupError) {
+    const error = actorInitError || profileError;
+    const errorMessage = error ? getUserSafeErrorSummary(error) : undefined;
+
+    return (
+      <StartupErrorScreen
+        errorMessage={errorMessage}
+        isRetrying={isRetrying}
+        onRetry={async () => {
+          setIsRetrying(true);
+          try {
+            await retry();
+          } finally {
+            // Keep retrying state for a bit to prevent double-clicks
+            setTimeout(() => setIsRetrying(false), 1000);
+          }
+        }}
+      />
+    );
+  }
+
+  // Show loading while actor or profile is initializing
+  if (actorFetching || profileLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
-          <p className="text-muted-foreground">Chargement...</p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (!identity) {
-    return <LoginPage />;
-  }
-
+  // Show profile setup if user has no profile yet
   const showProfileSetup = isFetched && profile === null;
   if (showProfileSetup) {
     return <SectionSelectPage isInitialSetup />;
   }
 
   return <>{children}</>;
+}
+
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { identity, isInitializing } = useInternetIdentity();
+
+  // Show loading only while checking for stored identity
+  if (isInitializing) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not logged in, show login page immediately
+  if (!identity) {
+    return <LoginPage />;
+  }
+
+  // User is authenticated, proceed to authenticated gate
+  return <AuthenticatedGate>{children}</AuthenticatedGate>;
 }
 
 function SectionGate({ children }: { children: React.ReactNode }) {

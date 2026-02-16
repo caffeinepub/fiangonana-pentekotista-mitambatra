@@ -1,15 +1,41 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T05:51:06.057Z",
-  "summary": "REQ-21 appears implemented: AttendancePage evaluates section-scoped attendance records after create/update, detects members with ≥3 consecutive absences using records sorted date-ascending, and shows an in-app toast per affected member using the specified Malagasy template with the member’s full name.",
-  "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.84,
+  "generatedAt": "2026-02-16T06:59:37.756Z",
+  "summary": "Core startup reliability work appears implemented via a new useSafeActor hook (guarding access-control init and capturing init errors), English loading text in App gates, and a StartupErrorScreen that can display a sanitized error message while logging to console. However, the Retry implementation likely does not actually reinitialize the same actor instance used by the app gate because it calls useSafeActor from a separate hook instance. Additionally, a backend migration module and explicit migration wiring were added without an explicit requirement indicating a stable-state schema upgrade was needed.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+      "reason": "The retry logic uses `useStartupRetry`, which internally calls `useSafeActor()` again and invokes `reinitialize()` from that separate hook instance. Since `useSafeActor`’s `attemptCounter` state is local to each hook instance, incrementing it in `useStartupRetry` may not affect the `useSafeActor` instance used by `AuthenticatedGate`, so the actor may not actually be re-initialized for the running gate (only the profile query is invalidated/refetched).",
+      "evidence": [
+        "frontend/src/hooks/useStartupRetry.ts",
+        "frontend/src/hooks/useSafeActor.ts",
+        "frontend/src/App.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added backend stable-state migration module and wired the actor to use explicit migration `(with migration = Migration.run)`.",
+      "reason": "BuildRequest allows adding `migration.mo` only if a stable-state schema upgrade is required, but no requirement/AC calls for a schema migration. The diff introduces `backend/migration.mo` and imports/uses it in `backend/main.mo` regardless.",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "confidence": 0.74,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/pages/AttendancePage.tsx",
-    "frontend/src/utils/attendanceConsecutiveAbsence.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/StartupErrorScreen.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/hooks/useSafeActor.ts",
+    "frontend/src/hooks/useStartupRetry.ts",
+    "frontend/src/utils/startupDiagnostics.ts",
     "project_state.json"
   ]
 }

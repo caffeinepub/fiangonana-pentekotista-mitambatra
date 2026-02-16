@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+.vite
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Capacitor
+android/app/build
+android/app/.cxx
+android/.gradle
+android/build
+android/local.properties
+android/.idea
+android/captures
+android/app/release
+android/app/debug
+*.apk
+*.aab
+
+# Keep Android project structure
+!android/
+!android/app/
+!android/app/src/

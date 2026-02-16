@@ -11,14 +11,15 @@ import Principal "mo:core/Principal";
 import Nat "mo:core/Nat";
 import Int "mo:core/Int";
 import Char "mo:core/Char";
+import Migration "migration"; // Import the migration module
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
 // Explicit migration via with clause
-
+(with migration = Migration.run)
 actor {
-  // Initialize the access control system
+  // Initialize the access control system state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
@@ -613,3 +614,4 @@ actor {
     };
   };
 };
+

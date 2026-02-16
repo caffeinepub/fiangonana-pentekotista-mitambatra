@@ -54,10 +54,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header with pattern background */}
       <header 
-        className="border-b bg-card relative overflow-hidden"
+        className="border-b bg-card relative overflow-hidden flex-shrink-0"
         style={{
           backgroundImage: 'url(/assets/generated/header-pattern.dim_1600x400.png)',
           backgroundSize: 'cover',
@@ -72,10 +72,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <img 
                 src="/assets/generated/app-logo.dim_512x512.png" 
                 alt="Logo" 
-                className="h-12 w-12 object-contain"
+                className="h-12 w-12 object-contain flex-shrink-0"
               />
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-foreground">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground break-words">
                   FIANGONANA PENTEKOTISTA MITAMBATRA
                 </h1>
                 {currentSection && (
@@ -86,7 +86,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <SyncStatus />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
@@ -100,10 +100,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Navigation */}
-      <nav className="border-b bg-card">
+      <nav className="border-b bg-card flex-shrink-0">
         <div className="container mx-auto px-4">
           {/* Desktop Navigation */}
-          <div className="hidden md:flex gap-2 py-2">
+          <div className="hidden md:flex gap-2 py-2 overflow-x-auto">
             <NavLinks />
           </div>
 
@@ -127,12 +127,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 flex-grow">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-card mt-12">
+      <footer className="border-t bg-card mt-12 flex-shrink-0">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>
             © {new Date().getFullYear()} · Built with ❤️ using{' '}

@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Notify the user in-app when a member reaches 3 consecutive absences in the currently selected section.
+**Goal:** Fix the deployed draft startup crash and make the startup Retry action fully re-run initialization, while ensuring startup/loading copy is in English and failures surface useful (sanitized) diagnostics.
 
 **Planned changes:**
-- On Attendance (Presence) screen save (create/update attendance record), evaluate each member’s most recent attendance records for the selected section in chronological order (oldest -> newest) to detect 3 consecutive Absents.
-- When a member’s last 3 consecutive records are Absent, display an in-app notification using the exact message template: "Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo." with <member name> replaced by the member’s full name.
-- Handle cases where multiple members meet the condition by showing a notification per member (or one notification that clearly lists each affected member) without crashing, and show no notification when the streak is <3 or broken by Present.
+- Harden app boot/initialization so actor/agent/access-control initialization cannot fail via unhandled errors; capture and surface initialization failures to the UI and log details to the console.
+- Ensure startup does not block solely due to a missing/empty admin token (continue without it).
+- Update the StartupErrorScreen Retry flow to re-initialize the backend actor and then re-run the profile query (not just refetching profile).
+- Replace any French startup/loading UI text with English (e.g., change “Chargement...” to “Loading...”).
+- Add minimal startup diagnostics on the error screen: a compact, user-safe error summary in the UI (no secrets), while logging full error details to the browser console.
 
-**User-visible outcome:** After saving attendance for a section, the app will immediately show an in-app notification for any member who has just reached 3 consecutive absences, using the specified message template.
+**User-visible outcome:** Loading the draft URL no longer immediately shows the generic startup failure on a healthy network; if startup fails, users see a concise error summary and can tap Retry to re-attempt full initialization and recover from transient errors without a hard refresh.

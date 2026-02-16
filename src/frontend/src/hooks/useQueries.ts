@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
+import { useSafeActor } from './useSafeActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import type {
   Member,
   FinancialReport,
@@ -14,7 +15,8 @@ import type {
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
-  const { actor, isFetching: actorFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useSafeActor();
+  const { identity } = useInternetIdentity();
 
   const query = useQuery<UserProfile | null>({
     queryKey: ['currentUserProfile'],
@@ -22,19 +24,19 @@ export function useGetCallerUserProfile() {
       if (!actor) throw new Error('Actor not available');
       return actor.getCallerUserProfile();
     },
-    enabled: !!actor && !actorFetching,
+    enabled: !!actor && !actorFetching && !!identity,
     retry: false,
   });
 
   return {
     ...query,
     isLoading: actorFetching || query.isLoading,
-    isFetched: !!actor && query.isFetched,
+    isFetched: !!actor && !!identity && query.isFetched,
   };
 }
 
 export function useSaveCallerUserProfile() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -50,7 +52,7 @@ export function useSaveCallerUserProfile() {
 
 // Member Queries
 export function useListMembers(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<Member[]>({
     queryKey: ['members', sectionId],
@@ -63,7 +65,7 @@ export function useListMembers(sectionId: string | null) {
 }
 
 export function useCreateMember() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -78,7 +80,7 @@ export function useCreateMember() {
 }
 
 export function useUpdateMember() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -93,7 +95,7 @@ export function useUpdateMember() {
 }
 
 export function useDeleteMember() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -109,7 +111,7 @@ export function useDeleteMember() {
 
 // Financial Report Queries
 export function useListFinancialReports(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<FinancialReport[]>({
     queryKey: ['financialReports', sectionId],
@@ -122,7 +124,7 @@ export function useListFinancialReports(sectionId: string | null) {
 }
 
 export function useCreateFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -137,7 +139,7 @@ export function useCreateFinancialReport() {
 }
 
 export function useUpdateFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -152,7 +154,7 @@ export function useUpdateFinancialReport() {
 }
 
 export function useDeleteFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -168,7 +170,7 @@ export function useDeleteFinancialReport() {
 
 // Monthly Remark Queries
 export function useGetMonthlyRemark(sectionId: string | null, year: number, month: number) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<MonthlyRemark | null>({
     queryKey: ['monthlyRemark', sectionId, year, month],
@@ -181,7 +183,7 @@ export function useGetMonthlyRemark(sectionId: string | null, year: number, mont
 }
 
 export function useSaveMonthlyRemark() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -199,7 +201,7 @@ export function useSaveMonthlyRemark() {
 
 // Program Queries
 export function useListPrograms(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<Program[]>({
     queryKey: ['programs', sectionId],
@@ -212,7 +214,7 @@ export function useListPrograms(sectionId: string | null) {
 }
 
 export function useCreateProgram() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -227,7 +229,7 @@ export function useCreateProgram() {
 }
 
 export function useUpdateProgram() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -242,7 +244,7 @@ export function useUpdateProgram() {
 }
 
 export function useDeleteProgram() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -258,7 +260,7 @@ export function useDeleteProgram() {
 
 // Group Queries
 export function useListGroups(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<Group[]>({
     queryKey: ['groups', sectionId],
@@ -271,7 +273,7 @@ export function useListGroups(sectionId: string | null) {
 }
 
 export function useCreateGroup() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -286,7 +288,7 @@ export function useCreateGroup() {
 }
 
 export function useUpdateGroup() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -301,7 +303,7 @@ export function useUpdateGroup() {
 }
 
 export function useDeleteGroup() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -317,7 +319,7 @@ export function useDeleteGroup() {
 
 // Group Financial Report Queries
 export function useListGroupFinancialReports(groupId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<GroupFinancialReport[]>({
     queryKey: ['groupFinancialReports', groupId],
@@ -330,7 +332,7 @@ export function useListGroupFinancialReports(groupId: string | null) {
 }
 
 export function useCreateGroupFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -346,7 +348,7 @@ export function useCreateGroupFinancialReport() {
 }
 
 export function useUpdateGroupFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -362,7 +364,7 @@ export function useUpdateGroupFinancialReport() {
 }
 
 export function useDeleteGroupFinancialReport() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -379,7 +381,7 @@ export function useDeleteGroupFinancialReport() {
 
 // Attendance Queries
 export function useListAttendanceRecords(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<AttendanceRecord[]>({
     queryKey: ['attendanceRecords', sectionId],
@@ -392,7 +394,7 @@ export function useListAttendanceRecords(sectionId: string | null) {
 }
 
 export function useCreateAttendanceRecord() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -407,7 +409,7 @@ export function useCreateAttendanceRecord() {
 }
 
 export function useUpdateAttendanceRecord() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -422,7 +424,7 @@ export function useUpdateAttendanceRecord() {
 }
 
 export function useDeleteAttendanceRecord() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -438,7 +440,7 @@ export function useDeleteAttendanceRecord() {
 
 // Section Committee Queries
 export function useGetSectionCommittee(sectionId: string | null) {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<SectionCommittee | null>({
     queryKey: ['sectionCommittee', sectionId],
@@ -451,7 +453,7 @@ export function useGetSectionCommittee(sectionId: string | null) {
 }
 
 export function useUpdateSectionCommittee() {
-  const { actor } = useActor();
+  const { actor } = useSafeActor();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -467,7 +469,7 @@ export function useUpdateSectionCommittee() {
 
 // Sync Status Query
 export function useGetLastSyncTime() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching } = useSafeActor();
 
   return useQuery<bigint>({
     queryKey: ['lastSyncTime'],

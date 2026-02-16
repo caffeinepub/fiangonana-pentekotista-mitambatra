@@ -1,6 +1,7 @@
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { GeneratedAssetsPreview } from '@/components/GeneratedAssetsPreview';
 
 export default function LoginPage() {
   const { login, loginStatus } = useInternetIdentity();
@@ -9,6 +10,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-accent/10 to-background p-4">
+      <GeneratedAssetsPreview />
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">

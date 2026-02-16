@@ -1,37 +1,87 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T05:51:06.059Z",
+  "generatedAt": "2026-02-16T06:59:37.759Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-21",
-        "summary": "In the Attendance (Presence) screen, trigger an in-app notification when any member reaches 3 consecutive absences (based on the most recent attendance records in chronological order for the currently selected section). The notification message must use this exact template and insert the member’s full name: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+        "id": "REQ-1",
+        "summary": "Fix the startup failure that shows the \"Something went wrong\" startup screen by ensuring actor initialization cannot throw unhandled errors during app boot (including the access-control initialization call). If initialization fails, surface the actual error to the UI layer (and console) rather than leaving the app stuck in a generic startup failure state.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/attendanceConsecutiveAbsence.ts",
-          "frontend/src/pages/AttendancePage.tsx"
+          "frontend/src/hooks/useSafeActor.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/utils/attendanceConsecutiveAbsence.ts",
-          "frontend/src/pages/AttendancePage.tsx"
+          "frontend/src/hooks/useSafeActor.ts",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Improve the StartupErrorScreen flow so the Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useStartupRetry.ts",
+          "frontend/src/App.tsx",
+          "frontend/src/components/StartupErrorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useStartupRetry.ts",
+          "frontend/src/App.tsx",
+          "frontend/src/components/StartupErrorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Change any startup/loading user-facing text that is currently in French (e.g., \"Chargement...\") to English.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Add minimal startup diagnostics to help identify future boot failures: when the startup error screen is shown, include a compact, user-safe error summary (no secrets/tokens), and always log the full error to the browser console.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/startupDiagnostics.ts",
+          "frontend/src/components/StartupErrorScreen.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/main.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/startupDiagnostics.ts",
+          "frontend/src/components/StartupErrorScreen.tsx",
+          "frontend/src/App.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/AttendancePage.tsx",
-    "frontend/src/utils/attendanceConsecutiveAbsence.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/components/StartupErrorScreen.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/hooks/useSafeActor.ts",
+    "frontend/src/hooks/useStartupRetry.ts",
+    "frontend/src/utils/startupDiagnostics.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,0 +1,22 @@
+{
+  "name": "FIANGONANA PENTEKOTISTA MITAMBATRA",
+  "short_name": "Vondrona",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#4ade80",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/generated/android-app-icon.dim_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/generated/android-app-icon.dim_512x512.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
