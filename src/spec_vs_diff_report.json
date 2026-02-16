@@ -1,0 +1,15 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-16T05:51:06.057Z",
+  "summary": "REQ-21 appears implemented: AttendancePage evaluates section-scoped attendance records after create/update, detects members with ≥3 consecutive absences using records sorted date-ascending, and shows an in-app toast per affected member using the specified Malagasy template with the member’s full name.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.84,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/pages/AttendancePage.tsx",
+    "frontend/src/utils/attendanceConsecutiveAbsence.ts",
+    "project_state.json"
+  ]
+}

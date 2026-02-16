@@ -1,0 +1,49 @@
+{
+  "kind": "build_request",
+  "title": "Attendance: notify when a member is absent 3 times consecutively",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-21",
+      "text": "In the Attendance (Presence) screen, trigger an in-app notification when any member reaches 3 consecutive absences (based on the most recent attendance records in chronological order for the currently selected section). The notification message must use this exact template and insert the member’s full name: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Alerter par une notification \"Deraina Jesosy, mila mamangy an'i \"entrer le nom de la membre\" ianareo Komity. Mifalia ao amin'ny Tompo. \" lorsqu'un membre est 3 fois absent successivement dans la fenêtre de presence"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the user creates or updates an attendance record in AttendancePage, the app evaluates consecutive absences per member using the section’s saved attendance records sorted by date ascending (oldest -> newest).",
+        "If a member is marked Absent in the last 3 consecutive attendance records for that section, an in-app notification (e.g., a toast/alert) is displayed containing the exact template text with <member name> replaced by the member’s full name.",
+        "If multiple members satisfy the condition after save, the app shows a notification for each affected member (or a single notification that clearly lists each affected member with the template text), without crashing.",
+        "No notification is shown for members who have fewer than 3 consecutive absences, or whose absence streak is broken by a Present entry in between.",
+        "The detection is scoped to the currently selected section (no cross-section data is considered)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything in frontend/src/components/ui (compose instead).",
+    "Respect the existing single-actor Motoko backend architecture; do not introduce additional backend services."
+  ],
+  "nonGoals": [
+    "Implementing OS-level push notifications (mobile/desktop) or background notification delivery.",
+    "Sending SMS, email, or any external communication to the committee."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

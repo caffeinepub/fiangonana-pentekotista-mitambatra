@@ -1,0 +1,30 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Attendance: in-app notification on 3 consecutive absences",
+  "requirements": [
+    {
+      "id": "REQ-21",
+      "summary": "Show an in-app notification on the Attendance screen when a member reaches 3 consecutive absences in the current section after saving an attendance record.",
+      "acceptanceCriteria": [
+        "When the user creates or updates an attendance record in AttendancePage, the app evaluates consecutive absences per member using the section’s saved attendance records sorted by date ascending (oldest -> newest).",
+        "If a member is marked Absent in the last 3 consecutive attendance records for that section, an in-app notification (e.g., a toast/alert) is displayed containing the exact template text with <member name> replaced by the member’s full name.",
+        "If multiple members satisfy the condition after save, the app shows a notification for each affected member (or a single notification that clearly lists each affected member with the template text), without crashing.",
+        "No notification is shown for members who have fewer than 3 consecutive absences, or whose absence streak is broken by a Present entry in between.",
+        "The detection is scoped to the currently selected section (no cross-section data is considered)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/attendanceConsecutiveAbsence.ts",
+          "operation": "create",
+          "description": "Add a small utility that, given the current section’s attendance records and members, sorts records by date ascending (oldest -> newest), computes each member’s last-3 statuses, and returns the list of members (with fullName) who are Absent in the last 3 consecutive records."
+        },
+        {
+          "path": "frontend/src/pages/AttendancePage.tsx",
+          "operation": "modify",
+          "description": "After a successful create/update in handleSubmit, re-evaluate consecutive absences using the section’s attendance records in chronological order (including the just-saved record by merging it into the in-memory list), and display an in-app toast notification (via the existing sonner toast usage) for each affected member using the exact template: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\" scoped to currentSection only."
+        }
+      ]
+    }
+  ]
+}

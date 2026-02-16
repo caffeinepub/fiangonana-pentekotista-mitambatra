@@ -1,0 +1,277 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 9,
+  "summary": "Mobile app for \"FIANGONANA PENTEKOTISTA MITAMBATRA\" to manage church sections (Sampana), member directory, committee roles, financial reporting, program scheduling, neighborhood groups with linked finances, attendance tracking with stats, and Wi‑Fi sync with committee login.",
+  "architectural_notes": [
+    "Data model should support multi-tenant partitioning by Sampana (section) for members/finance/program/attendance.",
+    "Financial module must support multiple line items for 'Hafa' (entries) and 'Antony' (exits) with per-item description and computed totals.",
+    "Group finance entries/exits should reference the same underlying transactions used by the main financial window (linked ledger).",
+    "Sync requirement: local-first storage with peer-to-peer Wi‑Fi sync and conflict resolution strategy; committee authentication gates sync operations.",
+    "Linked group-to-section financial transactions must carry metadata (originGroupId/originGroupName) so Window 2 can display the source group for each linked entry/expense.",
+    "Attendance module should track per-member consecutive absence streaks across dates to trigger an alert at 3 consecutive absences (for the selected section)."
+  ],
+  "known_issues": [
+    "Group window (Groupe) is missing the financial report feature/view per user feedback."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-the-app-shell-with-the-title-fiangonana-pentekotista-mitambatra-and-an-entry-flow-that-lets-the-user-select-a-section-sampana-sunday-school-youth-senior-youth-dorcas-barnabas-committee-the-selected-section-must-be-clearly-displayed-and-used-to-scope-all-data-views-entries-members-finances-programs-groups-attendance",
+      "title": "Create the app shell with the title \"FIANGONANA PENTEKOTISTA MITAMBATRA\" and an entry flow that lets the user select a Section (Sampana): \"Sunday School\", \"Youth\", \"Senior Youth\", \"Dorcas\", \"Barnabas\", \"Committee\". The selected section must be clearly displayed and used to scope all data views/entries (members, finances, programs, groups, attendance).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-screen-1-members-lisitra-crud-member-management-for-the-selected-section-with-fields-full-name-address-phone-sex-male-female-date-of-birth-father-mother-profession-include-list-view-with-search-and-member-detail-edit-form-with-validation-required-full-name-phone-optional-date-must-be-valid",
+      "title": "Implement Screen 1 \"Members\" (Lisitra): CRUD member management for the selected section with fields: Full name, Address, Phone, Sex (Male/Female), Date of birth, Father, Mother, Profession. Include list view with search and member detail/edit form with validation (required full name; phone optional; date must be valid).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-screen-2-financial-report-ara-bola-for-the-selected-section-create-and-view-daily-financial-reports-by-date-with-a-income-items-offerings-single-amount-sales-single-amount-fundraising-products-single-amount-vows-promises-multiple-entries-each-entry-has-amount-and-must-reference-one-or-more-selected-members-other-income-multiple-entries-each-entry-has-amount-and-a-required-reason-compute-and-display-total-income-as-the-sum-of-all-income-items",
+      "title": "Implement Screen 2 \"Financial Report\" (Ara-bola) for the selected section: create and view daily financial reports by date with (A) Income items: Offerings (single amount), Sales (single amount), Fundraising/Products (single amount), Vows/Promises (multiple entries; each entry has amount and must reference one or more selected members), Other income (multiple entries; each entry has amount and a required \"Reason\"). Compute and display Total Income as the sum of all income items.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-screen-2-financial-report-compute-c-balance-as-total-income-minus-total-expenses-implement-year-carryover-logic-the-remaining-balance-must-carry-forward-into-the-next-report-date-within-the-same-year-so-each-report-shows-starting-balance-carryover-from-previous-report-and-ending-balance-starting-balance-total-income-total-expenses-reset-carryover-at-the-start-of-a-new-year",
+      "title": "In Screen 2 \"Financial Report\", compute (C) Balance as Total Income minus Total Expenses. Implement year carryover logic: the remaining balance must carry forward into the next report date within the same year, so each report shows Starting Balance (carryover from previous report) and Ending Balance (Starting Balance + Total Income - Total Expenses). Reset carryover at the start of a new year.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-monthly-financial-summary-view-for-screen-2-for-each-month-in-a-chosen-year-show-aggregated-total-income-total-expenses-and-ending-balance-for-the-month-plus-a-free-text-remark-field-per-month-that-can-be-saved-and-edited",
+      "title": "Add a monthly financial summary view for Screen 2: for each month in a chosen year, show aggregated Total Income, Total Expenses, and Ending Balance for the month, plus a free-text \"Remark\" field per month that can be saved and edited.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-screen-3-program-programa-create-and-view-programs-by-date-for-the-selected-section-with-fields-devotion-leader-free-text-meeting-leader-must-be-selected-from-members-with-search-preacher-member-search-select-song-leader-member-search-select",
+      "title": "Implement Screen 3 \"Program\" (Programa): create and view programs by date for the selected section with fields: Devotion leader (free text), Meeting leader (must be selected from members with search), Preacher (member search/select), Song leader (member search/select).",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-screen-4-groups-allow-creating-neighborhood-groups-for-the-selected-section-with-fields-group-name-group-president-member-group-secretary-member-group-treasurer-member-and-members-multi-select-from-members-add-a-group-financial-report-entry-form-by-date-with-deposit-and-expense-amounts-that-are-automatically-recorded-into-the-section-s-main-financial-reports-screen-2-as-linked-entries-expenses-and-participate-in-the-same-carryover-balance-logic",
+      "title": "Implement Screen 4 \"Groups\": allow creating neighborhood groups for the selected section with fields: Group name, Group President (member), Group Secretary (member), Group Treasurer (member), and Members (multi-select from members). Add a Group Financial Report entry form (by date) with Deposit and Expense amounts that are automatically recorded into the section’s main Financial Reports (Screen 2) as linked entries/expenses, and participate in the same carryover/balance logic.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-screen-5-attendance-create-attendance-records-by-date-for-the-selected-section-with-per-member-status-present-absent-and-an-optional-absence-reason-when-absent-display-total-present-and-total-absent-for-the-date-provide-yearly-statistics-showing-the-top-5-members-with-the-highest-attendance-rate-for-the-chosen-year",
+      "title": "Implement Screen 5 \"Attendance\": create attendance records by date for the selected section with per-member status Present/Absent and an optional absence reason when Absent. Display total present and total absent for the date. Provide yearly statistics showing the top 5 members with the highest attendance rate for the chosen year.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-security-require-a-login-with-username-and-password-for-access-to-data-restricted-to-the-three-committee-accounts-provide-an-admin-setup-flow-to-initialize-update-the-3-committee-credentials-and-assign-each-credential-to-a-committee-role-president-treasurer-secretary",
+      "title": "Implement security: require a login with username and password for access to data, restricted to the three Committee accounts. Provide an admin setup flow to initialize/update the 3 Committee credentials and assign each credential to a committee role (President/Treasurer/Secretary).",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-cohesive-visual-theme-suitable-for-a-church-administrative-app-warm-neutral-palette-cream-sand-charcoal-with-a-green-accent-clear-typography-and-consistent-layout-across-all-screens-header-navigation-forms-tables-avoid-blue-purple-as-primary-brand-colors",
+      "title": "Apply a cohesive visual theme suitable for a church administrative app: warm neutral palette (cream/sand/charcoal with a green accent), clear typography, and consistent layout across all screens (header, navigation, forms, tables). Avoid blue/purple as primary brand colors.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-static-generated-image-assets-and-render-them-in-the-ui-an-app-logo-and-a-subtle-header-background-pattern-store-images-in-frontend-public-assets-generated-and-reference-them-directly-from-the-frontend",
+      "title": "Add static generated image assets and render them in the UI: an app logo and a subtle header background pattern. Store images in frontend/public/assets/generated and reference them directly from the frontend.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-the-missing-group-financial-report-feature-inside-the-groups-screen-allow-the-user-to-view-create-edit-and-delete-group-financial-report-entries-for-a-selected-group-with-fields-date-deposit-amount-and-expense-amount-scoped-to-the-currently-selected-section",
+      "title": "Restore the missing Group Financial Report feature inside the Groups screen: allow the user to view, create, edit, and delete Group Financial Report entries for a selected group, with fields Date, Deposit amount, and Expense amount, scoped to the currently selected Section.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-each-expense-sortie-in-financial-reports-has-a-required-reason-description-motif-and-that-this-motif-is-clearly-displayed-in-the-financial-report-ui-both-when-entering-expenses-and-when-reviewing-saved-reports",
+      "title": "Ensure each expense (sortie) in Financial Reports has a required reason/description (motif) and that this motif is clearly displayed in the financial report UI (both when entering expenses and when reviewing saved reports).",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-quick-actions-for-member-phone-numbers-in-the-members-list-provide-a-call-button-link-and-a-message-sms-button-link-that-use-the-member-s-phone-number",
+      "title": "Add quick actions for member phone numbers in the Members list: provide a Call button/link and a Message (SMS) button/link that use the member’s phone number.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-an-age-value-for-every-member-by-calculating-it-from-the-member-s-date-of-birth-and-showing-it-in-the-members-lisitra-ui-at-minimum-in-the-members-table-list-optionally-also-in-the-member-view-edit-dialog-as-read-only-if-date-of-birth-is-missing-or-invalid-show-a-neutral-placeholder-e-g",
+      "title": "Display an age value for every member by calculating it from the member’s Date of birth and showing it in the Members (Lisitra) UI (at minimum in the members table list; optionally also in the member view/edit dialog as read-only). If Date of birth is missing or invalid, show a neutral placeholder (e.g., \"—\").",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-that-each-group-financial-report-entry-deposit-expense-is-reflected-in-the-section-s-main-financial-report-screen-2-for-the-same-date-and-that-the-reflected-entry-clearly-includes-the-originating-group-name-so-the-main-report-shows-which-group-made-the-transfer-deposit-or-withdrawal-expense-this-linkage-must-remain-correct-on-create-update-and-delete-of-a-group-financial-report-entry",
+      "title": "Ensure that each Group Financial Report entry (deposit/expense) is reflected in the Section’s main Financial Report (Screen 2) for the same date, and that the reflected entry clearly includes the originating Group name (so the main report shows which group made the transfer/deposit or withdrawal/expense). This linkage must remain correct on create, update, and delete of a group financial report entry.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-financial-report-screen-2-ui-including-the-details-dialog-to-display-the-originating-group-name-alongside-any-linked-income-expense-items-that-originate-from-group-financial-reports",
+      "title": "Update the Financial Report (Screen 2) UI (including the details dialog) to display the originating Group name alongside any linked income/expense items that originate from Group Financial Reports.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-attendance-presence-screen-trigger-an-in-app-notification-when-any-member-reaches-3-consecutive-absences-based-on-the-most-recent-attendance-records-in-chronological-order-for-the-currently-selected-section-the-notification-message-must-use-this-exact-template-and-insert-the-member-s-full-name-deraina-jesosy-mila-mamangy-an-i-member-name-ianareo-komity-mifalia-ao-amin-ny-tompo",
+      "title": "In the Attendance (Presence) screen, trigger an in-app notification when any member reaches 3 consecutive absences (based on the most recent attendance records in chronological order for the currently selected section). The notification message must use this exact template and insert the member’s full name: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "App setup: title \"FIANGONANA PENTEKOTISTA MITAMBATRA\" and entry section (Sampana) selector (Sekoly Alahady, Tanora, Tanora Zokiny, Dorkasy, Barnabasy, Komity).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Committee header: show 3 responsible members with roles (President/Filoha, Treasurer/Mpitahiry vola, Secretary/Mpitan-tsoratra).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Window 1 (Lisitra): member management with fields (name, address, phone, sex, birthdate, father, mother, profession).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Window 2 (Ara-bola): financial reports with date, entries (Fanatitra, Tonona linked to member(s), Varotra, Vokatra, Hafa with multiple items + motif), exits (multiple motifs + descriptions), totals, and balance (Ambiny) with carryover; monthly summary with remark (Fanamarihana).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Window 3 (Programa): schedule by date; assign roles (devotion lead, meeting lead, preaching, song lead) with member search/selection.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Window 4 (Groupe): create neighborhood groups with officers (president, secretary, treasurer), select members, and group financial report where deposits/expenses link directly into Window 2 entries/exits with carryover.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Window 5 (Fahatongavana): attendance by date with present/absent + absence reason; counts of present/absent; yearly top-5 most present members.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Security & sync: login + password for the three committee members and Wi‑Fi synchronization across devices for recorded data.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add a persistent top header area that displays the three committee responsible roles for the currently selected section: President, Treasurer, Secretary, each linked to a selected Member record. Provide UI to assign/replace the member for each role (from the section member list).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "In Screen 2 \"Financial Report\", add (B) Expenses: multiple expense items where each item has an amount and a required Description/Reason. Compute Total Expenses as the sum of expense items.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Implement cross-device synchronization by storing all records in the Internet Computer backend so that changes made on one device become visible on another after refresh. Add clear UI feedback for sync state (e.g., last sync time / loading indicators) and conflict handling rule: last write wins based on backend timestamp.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Window 4 (Groupe): add/restore the Group financial report view/form inside the Groupe window (the user reports it is missing).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Window 2 (Ara-bola): ensure each expense (sortie) includes and displays a required 'motif' (reason/description) in the financial report views/exports.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Window 1 (Lisitra/Members): add quick actions on member phone number to Call and send Message (SMS) via buttons/links.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Window 1 (Lisitra/Members): display each member’s Age (calculated from Date of birth) in member list and/or member detail so age is mentioned for every member.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Window 2 (Ara-bola): when Group (Groupe) deposits/expenses are linked into the section’s main financial report, display the originating Group name on each linked entry/exit (so the report shows which group made the transfer/withdrawal).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Attendance (Fahatongavana): trigger a notification alert when a member is absent 3 times consecutively, using the message template: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "FIANGONANA PENTEKOTISTA MITAMBATRA",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

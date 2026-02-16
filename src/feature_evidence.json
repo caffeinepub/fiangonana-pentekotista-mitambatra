@@ -1,0 +1,25 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-in-the-attendance-presence-screen-trigger-an-in-app-notification-when-any-member-reaches-3-consecutive-absences-based-on-the-most-recent-attendance-records-in-chronological-order-for-the-currently-selected-section-the-notification-message-must-use-this-exact-template-and-insert-the-member-s-full-name-deraina-jesosy-mila-mamangy-an-i-member-name-ianareo-komity-mifalia-ao-amin-ny-tompo",
+      "featureTitle": "In the Attendance (Presence) screen, trigger an in-app notification when any member reaches 3 consecutive absences (based on the most recent attendance records in chronological order for the currently selected section). The notification message must use this exact template and insert the member’s full name: \"Deraina Jesosy, mila mamangy an'i <member name> ianareo Komity. Mifalia ao amin'ny Tompo.\"",
+      "files": [
+        "frontend/src/pages/AttendancePage.tsx",
+        "frontend/src/utils/attendanceConsecutiveAbsence.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

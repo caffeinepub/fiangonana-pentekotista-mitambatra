@@ -1,0 +1,20 @@
+{
+  "frontend/src/App.tsx": "Main application component with router configuration, authentication gate, section gate, and layout composition using TanStack Router.",
+  "frontend/src/contexts/SectionContext.tsx": "Section context provider managing the current selected section (Sampana) with persistence to user profile and helper functions.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including members, financial reports, programs, groups, attendance, committee, and sync status with proper cache invalidation; group financial report mutations now also invalidate section financial reports.",
+  "frontend/src/components/layout/AppLayout.tsx": "Main layout component with header (logo, title, committee display), navigation menu, sync status, logout button, and footer with attribution.",
+  "frontend/src/components/CommitteeHeader.tsx": "Committee role display and assignment component showing President/Treasurer/Secretary with member selection dialogs.",
+  "frontend/src/components/SyncStatus.tsx": "Sync status indicator showing loading state and last sync time from backend.",
+  "frontend/src/pages/LoginPage.tsx": "Login page with Internet Identity integration and branding.",
+  "frontend/src/pages/SectionSelectPage.tsx": "Section selection page for initial setup or switching sections with name input for first-time users.",
+  "frontend/src/pages/MembersPage.tsx": "Members management page with CRUD operations, search functionality, Call/SMS action buttons, and now displays member age in a dedicated \"Taona\" column with age preview in the edit dialog.",
+  "frontend/src/pages/FinancialReportsPage.tsx": "Financial reports page with income/expenses tracking, required expense description validation, details view button, and now preserves groupFinancialEntries when editing reports and displays group entry count badge on report cards.",
+  "frontend/src/pages/ProgramsPage.tsx": "Programs page (Programa) with date-based scheduling, devotion leader free text, and member selection for meeting leader, preacher, and song leader.",
+  "frontend/src/pages/GroupsPage.tsx": "Groups management page with CRUD operations, member assignments, and integrated group financial reports dialog accessible via dollar sign button on each group card.",
+  "frontend/src/pages/AttendancePage.tsx": "Attendance tracking page with present/absent marking, absence reasons, totals display, yearly top-5 statistics, and now displays in-app toast notifications when members reach 3 consecutive absences after saving an attendance record.",
+  "frontend/src/index.css": "Global styles with warm neutral palette (cream/sand/charcoal) and green accent using OKLCH color system for light and dark modes.",
+  "frontend/src/components/groups/GroupFinancialReportsDialog.tsx": "Dialog component for managing group financial reports with list, create, edit, and delete operations sorted by date descending.",
+  "frontend/src/components/financial/FinancialReportDetailsDialog.tsx": "Dialog component displaying detailed financial report breakdown including income sources, vows with member names, other income, expenses with descriptions, and group-linked deposits and expenses with originating group name badges; TransactionType is now imported as a value to enable runtime enum comparison.",
+  "frontend/src/utils/memberAge.ts": "Utility functions to calculate and format member age from dateOfBirth string, returning null for invalid/missing/future dates and a placeholder \"—\" for display.",
+  "frontend/src/utils/attendanceConsecutiveAbsence.ts": "Utility function that detects members with 3 or more consecutive absences by sorting attendance records chronologically and tracking absence streaks per member."
+}
