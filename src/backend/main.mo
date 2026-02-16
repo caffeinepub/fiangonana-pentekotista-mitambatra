@@ -163,6 +163,29 @@ actor {
     updatedAt : Int;
   };
 
+  // New Literature Type for Chinese Texts
+  public type Sentence = {
+    id : Text;
+    chinese : Text;
+    english : Text;
+    pinyin : Text;
+    grammaticHints : ?Text;
+    createdAt : Int;
+    updatedAt : Int;
+  };
+
+  public type Book = {
+    id : Text;
+    title : Text;
+    author : Text;
+    type_ : Text; // "Book" or "Lesson"
+    topic : ?Text; // THEO, REL, CULTURE, ST (science/tech), GAME, 101
+    level : Text; // A1, A2, B1, B2, C1, C2
+    sentences : [Sentence];
+    createdAt : Int;
+    updatedAt : Int;
+  };
+
   // Storage
   let userProfiles = Map.empty<Principal, UserProfile>();
   let members = Map.empty<Text, Member>();
@@ -173,6 +196,93 @@ actor {
   let groupFinancialReports = Map.empty<Text, GroupFinancialReport>();
   let attendanceRecords = Map.empty<Text, AttendanceRecord>();
   let sectionCommittees = Map.empty<Text, SectionCommittee>();
+  let books = Map.empty<Text, Book>();
+
+  // Book Management
+  public shared ({ caller }) func createBook(book : Book) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can create books");
+    };
+    books.add(book.id, book);
+    book.id;
+  };
+
+  public shared ({ caller }) func updateBook(book : Book) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update books");
+    };
+    books.add(book.id, book);
+  };
+
+  public shared ({ caller }) func deleteBook(bookId : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete books");
+    };
+    books.remove(bookId);
+  };
+
+  public query ({ caller }) func getBook(bookId : Text) : async ?Book {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can view books");
+    };
+    books.get(bookId);
+  };
+
+  public query ({ caller }) func listBooks() : async [Book] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can list books");
+    };
+    books.values().toArray();
+  };
+
+  // Sentence Management
+  public shared ({ caller }) func addSentenceToBook(bookId : Text, sentence : Sentence) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add sentences to books");
+    };
+    switch (books.get(bookId)) {
+      case (null) { Runtime.trap("Book does not exist") };
+      case (?book) {
+        let updatedSentences = book.sentences.concat([sentence]);
+        let updatedBook = { book with sentences = updatedSentences };
+        books.add(bookId, updatedBook);
+      };
+    };
+  };
+
+  public shared ({ caller }) func updateSentenceInBook(bookId : Text, sentence : Sentence) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update sentences in books");
+    };
+    switch (books.get(bookId)) {
+      case (null) { Runtime.trap("Book does not exist") };
+      case (?book) {
+        let updatedSentences = book.sentences.map(
+          func(s) {
+            if (s.id == sentence.id) { sentence } else { s };
+          }
+        );
+        let updatedBook = { book with sentences = updatedSentences };
+        books.add(bookId, updatedBook);
+      };
+    };
+  };
+
+  public shared ({ caller }) func deleteSentenceFromBook(bookId : Text, sentenceId : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete sentences from books");
+    };
+    switch (books.get(bookId)) {
+      case (null) { Runtime.trap("Book does not exist") };
+      case (?book) {
+        let updatedSentences = book.sentences.filter(
+          func(s) { s.id != sentenceId }
+        );
+        let updatedBook = { book with sentences = updatedSentences };
+        books.add(bookId, updatedBook);
+      };
+    };
+  };
 
   // User Profile Management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -614,4 +724,3 @@ actor {
     };
   };
 };
-

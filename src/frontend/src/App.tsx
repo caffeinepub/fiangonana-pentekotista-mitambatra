@@ -8,6 +8,9 @@ import FinancialReportsPage from './pages/FinancialReportsPage';
 import ProgramsPage from './pages/ProgramsPage';
 import GroupsPage from './pages/GroupsPage';
 import AttendancePage from './pages/AttendancePage';
+import BookLibraryPage from './pages/BookLibraryPage';
+import BookReaderPage from './pages/BookReaderPage';
+import BookEditorPage from './pages/BookEditorPage';
 import AppLayout from './components/layout/AppLayout';
 import { SectionProvider } from './contexts/SectionContext';
 import { Toaster } from '@/components/ui/sonner';
@@ -169,6 +172,24 @@ const attendanceRoute = createRoute({
   component: AttendancePage,
 });
 
+const booksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/books',
+  component: BookLibraryPage,
+});
+
+const bookReaderRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/books/$bookId/read',
+  component: BookReaderPage,
+});
+
+const bookEditorRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/books/$bookId/edit',
+  component: BookEditorPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   membersRoute,
@@ -176,6 +197,9 @@ const routeTree = rootRoute.addChildren([
   programsRoute,
   groupsRoute,
   attendanceRoute,
+  booksRoute,
+  bookReaderRoute,
+  bookEditorRoute,
 ]);
 
 const router = createRouter({ routeTree });

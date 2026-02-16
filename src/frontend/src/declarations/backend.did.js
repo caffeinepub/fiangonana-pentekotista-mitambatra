@@ -8,6 +8,15 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const Sentence = IDL.Record({
+  'id' : IDL.Text,
+  'grammaticHints' : IDL.Opt(IDL.Text),
+  'createdAt' : IDL.Int,
+  'chinese' : IDL.Text,
+  'updatedAt' : IDL.Int,
+  'pinyin' : IDL.Text,
+  'english' : IDL.Text,
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
@@ -27,6 +36,17 @@ export const AttendanceRecord = IDL.Record({
   'updatedAt' : IDL.Int,
   'sectionId' : IDL.Text,
   'totalPresent' : IDL.Nat,
+});
+export const Book = IDL.Record({
+  'id' : IDL.Text,
+  'sentences' : IDL.Vec(Sentence),
+  'title' : IDL.Text,
+  'topic' : IDL.Opt(IDL.Text),
+  'createdAt' : IDL.Int,
+  'type' : IDL.Text,
+  'level' : IDL.Text,
+  'author' : IDL.Text,
+  'updatedAt' : IDL.Int,
 });
 export const ExpenseEntry = IDL.Record({
   'description' : IDL.Text,
@@ -139,8 +159,10 @@ export const SectionCommittee = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addSentenceToBook' : IDL.Func([IDL.Text, Sentence], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createAttendanceRecord' : IDL.Func([AttendanceRecord], [IDL.Text], []),
+  'createBook' : IDL.Func([Book], [IDL.Text], []),
   'createFinancialReport' : IDL.Func([FinancialReport], [IDL.Text], []),
   'createGroup' : IDL.Func([Group], [IDL.Text], []),
   'createGroupFinancialReport' : IDL.Func(
@@ -151,16 +173,19 @@ export const idlService = IDL.Service({
   'createMember' : IDL.Func([Member], [IDL.Text], []),
   'createProgram' : IDL.Func([Program], [IDL.Text], []),
   'deleteAttendanceRecord' : IDL.Func([IDL.Text], [], []),
+  'deleteBook' : IDL.Func([IDL.Text], [], []),
   'deleteFinancialReport' : IDL.Func([IDL.Text], [], []),
   'deleteGroup' : IDL.Func([IDL.Text], [], []),
   'deleteGroupFinancialReport' : IDL.Func([IDL.Text], [], []),
   'deleteMember' : IDL.Func([IDL.Text], [], []),
   'deleteProgram' : IDL.Func([IDL.Text], [], []),
+  'deleteSentenceFromBook' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'getAttendanceRecord' : IDL.Func(
       [IDL.Text],
       [IDL.Opt(AttendanceRecord)],
       ['query'],
     ),
+  'getBook' : IDL.Func([IDL.Text], [IDL.Opt(Book)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getFinancialReport' : IDL.Func(
@@ -199,6 +224,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(AttendanceRecord)],
       ['query'],
     ),
+  'listBooks' : IDL.Func([], [IDL.Vec(Book)], ['query']),
   'listFinancialReports' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(FinancialReport)],
@@ -215,17 +241,28 @@ export const idlService = IDL.Service({
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveMonthlyRemark' : IDL.Func([MonthlyRemark], [], []),
   'updateAttendanceRecord' : IDL.Func([AttendanceRecord], [], []),
+  'updateBook' : IDL.Func([Book], [], []),
   'updateFinancialReport' : IDL.Func([FinancialReport], [], []),
   'updateGroup' : IDL.Func([Group], [], []),
   'updateGroupFinancialReport' : IDL.Func([GroupFinancialReport], [], []),
   'updateMember' : IDL.Func([Member], [], []),
   'updateProgram' : IDL.Func([Program], [], []),
   'updateSectionCommittee' : IDL.Func([SectionCommittee], [], []),
+  'updateSentenceInBook' : IDL.Func([IDL.Text, Sentence], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const Sentence = IDL.Record({
+    'id' : IDL.Text,
+    'grammaticHints' : IDL.Opt(IDL.Text),
+    'createdAt' : IDL.Int,
+    'chinese' : IDL.Text,
+    'updatedAt' : IDL.Int,
+    'pinyin' : IDL.Text,
+    'english' : IDL.Text,
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -245,6 +282,17 @@ export const idlFactory = ({ IDL }) => {
     'updatedAt' : IDL.Int,
     'sectionId' : IDL.Text,
     'totalPresent' : IDL.Nat,
+  });
+  const Book = IDL.Record({
+    'id' : IDL.Text,
+    'sentences' : IDL.Vec(Sentence),
+    'title' : IDL.Text,
+    'topic' : IDL.Opt(IDL.Text),
+    'createdAt' : IDL.Int,
+    'type' : IDL.Text,
+    'level' : IDL.Text,
+    'author' : IDL.Text,
+    'updatedAt' : IDL.Int,
   });
   const ExpenseEntry = IDL.Record({
     'description' : IDL.Text,
@@ -357,8 +405,10 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addSentenceToBook' : IDL.Func([IDL.Text, Sentence], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createAttendanceRecord' : IDL.Func([AttendanceRecord], [IDL.Text], []),
+    'createBook' : IDL.Func([Book], [IDL.Text], []),
     'createFinancialReport' : IDL.Func([FinancialReport], [IDL.Text], []),
     'createGroup' : IDL.Func([Group], [IDL.Text], []),
     'createGroupFinancialReport' : IDL.Func(
@@ -369,16 +419,19 @@ export const idlFactory = ({ IDL }) => {
     'createMember' : IDL.Func([Member], [IDL.Text], []),
     'createProgram' : IDL.Func([Program], [IDL.Text], []),
     'deleteAttendanceRecord' : IDL.Func([IDL.Text], [], []),
+    'deleteBook' : IDL.Func([IDL.Text], [], []),
     'deleteFinancialReport' : IDL.Func([IDL.Text], [], []),
     'deleteGroup' : IDL.Func([IDL.Text], [], []),
     'deleteGroupFinancialReport' : IDL.Func([IDL.Text], [], []),
     'deleteMember' : IDL.Func([IDL.Text], [], []),
     'deleteProgram' : IDL.Func([IDL.Text], [], []),
+    'deleteSentenceFromBook' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'getAttendanceRecord' : IDL.Func(
         [IDL.Text],
         [IDL.Opt(AttendanceRecord)],
         ['query'],
       ),
+    'getBook' : IDL.Func([IDL.Text], [IDL.Opt(Book)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getFinancialReport' : IDL.Func(
@@ -421,6 +474,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(AttendanceRecord)],
         ['query'],
       ),
+    'listBooks' : IDL.Func([], [IDL.Vec(Book)], ['query']),
     'listFinancialReports' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(FinancialReport)],
@@ -437,12 +491,14 @@ export const idlFactory = ({ IDL }) => {
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveMonthlyRemark' : IDL.Func([MonthlyRemark], [], []),
     'updateAttendanceRecord' : IDL.Func([AttendanceRecord], [], []),
+    'updateBook' : IDL.Func([Book], [], []),
     'updateFinancialReport' : IDL.Func([FinancialReport], [], []),
     'updateGroup' : IDL.Func([Group], [], []),
     'updateGroupFinancialReport' : IDL.Func([GroupFinancialReport], [], []),
     'updateMember' : IDL.Func([Member], [], []),
     'updateProgram' : IDL.Func([Program], [], []),
     'updateSectionCommittee' : IDL.Func([SectionCommittee], [], []),
+    'updateSentenceInBook' : IDL.Func([IDL.Text, Sentence], [], []),
   });
 };
 

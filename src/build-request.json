@@ -1,92 +1,145 @@
 {
   "kind": "build_request",
-  "title": "Fix deployed draft startup crash and make retry reinitialize actor/profile",
-  "priority": "high",
+  "title": "Add a Chinese book reader module with text-to-speech playback for Chinese sentences",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Fix the startup failure that shows the \"Something went wrong\" startup screen by ensuring actor initialization cannot throw unhandled errors during app boot (including the access-control initialization call). If initialization fails, surface the actual error to the UI layer (and console) rather than leaving the app stuck in a generic startup failure state.",
-      "target": "both",
+      "id": "REQ-5",
+      "text": "Add backend support for storing “book-based” Chinese reading content as structured data (e.g., books/lessons with ordered Chinese sentences) and expose query + mutation methods to: (1) list available books/lessons, (2) fetch a single book/lesson with its sentences in order, and (3) create/update/delete books/lessons and sentences.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "recent-3",
-          "recent-4"
+          "msg-1"
         ],
         "quotes": [
-          "Le message « Something went wrong » affiché sur l’URL n-1ns-draft.caffeine.xyz",
-          "Ok fais le"
+          "Créer moi une application a partir de ce livre, avec voix qui lis la phrase chinoise."
         ]
       },
       "acceptanceCriteria": [
-        "Loading the draft URL no longer immediately shows the startup error screen on a healthy network.",
-        "If backend/agent/actor initialization fails, the error is captured (no unhandled promise rejection) and is available to display/log for debugging.",
-        "The app does not trap solely because an admin token is missing/empty; startup works without providing any admin token."
+        "Backend defines stable Motoko types for book/lesson and sentence entries, including deterministic ordering (e.g., an explicit index/order field).",
+        "Backend provides canister methods to list books/lessons and fetch a selected one with its sentences.",
+        "Backend provides canister methods to create/update/delete books/lessons and sentences.",
+        "All methods are integrated into the existing single-actor architecture in backend/main.mo without introducing additional backend services."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Improve the StartupErrorScreen flow so the Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+      "id": "REQ-6",
+      "text": "Add React Query hooks for the new backend book/lesson and sentence APIs (list, get details, create/update/delete) following the existing patterns in frontend/src/hooks/useQueries.ts, including cache invalidation for edits.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-3"
+          "msg-1"
         ],
         "quotes": [
-          "Something went wrong"
+          "Créer moi une application a partir de ce livre, avec voix qui lis la phrase chinoise."
         ]
       },
       "acceptanceCriteria": [
-        "Tapping Retry triggers a fresh actor initialization attempt and then re-runs the user profile fetch.",
-        "If the initial failure was transient (e.g., a temporary agent/replica error), Retry can recover without a hard refresh.",
-        "Retry does not require navigating away or clearing storage manually."
+        "New hooks exist for listing books/lessons, fetching a selected book/lesson, and mutating content.",
+        "Mutations invalidate/refetch the correct queries so the UI updates immediately after edits.",
+        "Hooks handle the ‘actor not available’ state consistently with existing hooks."
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Change any startup/loading user-facing text that is currently in French (e.g., \"Chargement...\") to English.",
+      "id": "REQ-7",
+      "text": "Add a new ‘Book Reader’ area to the app UI with routing and navigation entry, without breaking existing pages. Include: (1) a library/list page to select a book/lesson, and (2) a reader page that displays the ordered Chinese sentences for the selected content.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-3"
+          "msg-1"
         ],
         "quotes": [
-          "Use English for any user-facing text in the build request."
+          "Créer moi une application a partir de ce livre, avec voix qui lis la phrase chinoise."
         ]
       },
       "acceptanceCriteria": [
-        "All loading states shown during app startup use English text (e.g., \"Loading...\").",
-        "No French strings remain in the startup gates (AuthGate/AuthenticatedGate) loading UI."
+        "A new navigation item is visible in the main layout and leads to the new book reader pages.",
+        "Users can see a list of available books/lessons and open one.",
+        "The reader view renders the Chinese sentences in the correct order and remains usable on mobile screens."
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Add minimal startup diagnostics to help identify future boot failures: when the startup error screen is shown, include a compact, user-safe error summary (no secrets/tokens), and always log the full error to the browser console.",
+      "id": "REQ-8",
+      "text": "Implement in-browser text-to-speech playback for each Chinese sentence in the reader page using the Web Speech API (speechSynthesis). Provide per-sentence controls: Play, Stop, and an option to autoplay the next sentence. Set the utterance language to Chinese (e.g., 'zh-CN') and expose basic controls for rate and pitch.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-3"
+          "msg-1"
         ],
         "quotes": [
-          "Something went wrong"
+          "...avec voix qui lis la phrase chinoise."
         ]
       },
       "acceptanceCriteria": [
-        "When startup fails, the UI shows a short error summary (e.g., \"Initialization failed\" + a sanitized message).",
-        "No secret values (e.g., any admin token) are rendered to the screen or logged.",
-        "The console contains enough detail (stack/message) to debug the root cause."
+        "Each sentence row has a Play control that reads the Chinese text aloud.",
+        "Stop immediately cancels current playback.",
+        "When Autoplay is enabled, finishing one sentence automatically starts the next sentence.",
+        "Speech uses a Chinese language tag (e.g., 'zh-CN') and the UI offers rate and pitch controls that affect playback.",
+        "If speechSynthesis is unavailable, the UI shows a clear fallback message and does not crash."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Add a simple content editor UI to allow entering the book content from the user’s book: create/edit a book/lesson and add/edit/reorder Chinese sentences. This editor must use the backend CRUD APIs (not hardcoded seed-only content).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Créer moi une application a partir de ce livre..."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can create a new book/lesson with a title.",
+        "Users can add, edit, delete, and reorder sentences for a book/lesson.",
+        "Changes persist after refresh and are visible in the library and reader views.",
+        "Editor provides basic validation (non-empty title; non-empty Chinese sentence)."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Apply a cohesive visual theme appropriate for a reading app (e.g., warm paper-like background, high-contrast typography, subtle ink accents) and enforce it consistently across the new Book Reader pages while still fitting the existing Tailwind/shadcn styling system.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Book Reader pages have a consistent, readable visual style (spacing, typography, colors) suitable for long text reading.",
+        "UI remains accessible (readable contrast, clear focus states) and responsive on mobile and desktop."
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Add generated static image assets for the Book Reader module and render them from frontend/public/assets/generated (do not serve images through the backend).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The new generated image(s) exist under frontend/public/assets/generated and are referenced directly by the new UI.",
+        "Assets load correctly in the web build without backend involvement."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts directly if they are in immutable paths; if changes are needed, implement them via composition/wrappers in editable files.",
-    "Backend must remain a single Motoko actor in backend/main.mo; only add migration.mo if a stable-state schema upgrade is required."
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything inside frontend/src/components/ui; compose these components instead.",
+    "Keep all Motoko logic in the single actor at backend/main.mo; only add backend/migration.mo changes if persistent state layout changes require a migration.",
+    "Do not break or remove existing routes/pages (Members, Financial, Programs, Groups, Attendance); the Book Reader must be added alongside existing functionality."
   ],
   "nonGoals": [
-    "Adding new product features or changing core app flows beyond fixing startup reliability and English startup copy.",
-    "Integrating third-party auth providers or external databases/services."
+    "Do not integrate external text-to-speech providers or AI services; use only in-browser speechSynthesis for voice.",
+    "Do not implement OCR, PDF scanning, or automatic extraction of book content from images; content entry/import is manual via the editor UI.",
+    "Do not add real-time collaboration or WebSocket-based synchronized reading."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Book cover illustration in a minimalist ink-on-paper style with Chinese calligraphy-like strokes and a subtle bamboo motif (book-cover.dim_1200x1600.png)"
+    ],
     "edits": []
   }
 }

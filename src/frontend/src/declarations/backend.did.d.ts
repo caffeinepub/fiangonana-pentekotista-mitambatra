@@ -20,6 +20,17 @@ export interface AttendanceRecord {
   'sectionId' : string,
   'totalPresent' : bigint,
 }
+export interface Book {
+  'id' : string,
+  'sentences' : Array<Sentence>,
+  'title' : string,
+  'topic' : [] | [string],
+  'createdAt' : bigint,
+  'type' : string,
+  'level' : string,
+  'author' : string,
+  'updatedAt' : bigint,
+}
 export interface ExpenseEntry { 'description' : string, 'amount' : bigint }
 export interface FinancialReport {
   'id' : string,
@@ -114,6 +125,15 @@ export interface SectionCommittee {
   'sectionId' : string,
   'secretaryId' : [] | [string],
 }
+export interface Sentence {
+  'id' : string,
+  'grammaticHints' : [] | [string],
+  'createdAt' : bigint,
+  'chinese' : string,
+  'updatedAt' : bigint,
+  'pinyin' : string,
+  'english' : string,
+}
 export type TransactionType = { 'expense' : null } |
   { 'deposit' : null };
 export interface UserProfile {
@@ -127,20 +147,25 @@ export type UserRole = { 'admin' : null } |
 export interface VowEntry { 'memberIds' : Array<string>, 'amount' : bigint }
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addSentenceToBook' : ActorMethod<[string, Sentence], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createAttendanceRecord' : ActorMethod<[AttendanceRecord], string>,
+  'createBook' : ActorMethod<[Book], string>,
   'createFinancialReport' : ActorMethod<[FinancialReport], string>,
   'createGroup' : ActorMethod<[Group], string>,
   'createGroupFinancialReport' : ActorMethod<[GroupFinancialReport], string>,
   'createMember' : ActorMethod<[Member], string>,
   'createProgram' : ActorMethod<[Program], string>,
   'deleteAttendanceRecord' : ActorMethod<[string], undefined>,
+  'deleteBook' : ActorMethod<[string], undefined>,
   'deleteFinancialReport' : ActorMethod<[string], undefined>,
   'deleteGroup' : ActorMethod<[string], undefined>,
   'deleteGroupFinancialReport' : ActorMethod<[string], undefined>,
   'deleteMember' : ActorMethod<[string], undefined>,
   'deleteProgram' : ActorMethod<[string], undefined>,
+  'deleteSentenceFromBook' : ActorMethod<[string, string], undefined>,
   'getAttendanceRecord' : ActorMethod<[string], [] | [AttendanceRecord]>,
+  'getBook' : ActorMethod<[string], [] | [Book]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getFinancialReport' : ActorMethod<[string], [] | [FinancialReport]>,
@@ -161,6 +186,7 @@ export interface _SERVICE {
   'initializeCommitteeCredentials' : ActorMethod<[Array<Principal>], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'listAttendanceRecords' : ActorMethod<[string], Array<AttendanceRecord>>,
+  'listBooks' : ActorMethod<[], Array<Book>>,
   'listFinancialReports' : ActorMethod<[string], Array<FinancialReport>>,
   'listGroupFinancialReports' : ActorMethod<
     [string],
@@ -172,12 +198,14 @@ export interface _SERVICE {
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveMonthlyRemark' : ActorMethod<[MonthlyRemark], undefined>,
   'updateAttendanceRecord' : ActorMethod<[AttendanceRecord], undefined>,
+  'updateBook' : ActorMethod<[Book], undefined>,
   'updateFinancialReport' : ActorMethod<[FinancialReport], undefined>,
   'updateGroup' : ActorMethod<[Group], undefined>,
   'updateGroupFinancialReport' : ActorMethod<[GroupFinancialReport], undefined>,
   'updateMember' : ActorMethod<[Member], undefined>,
   'updateProgram' : ActorMethod<[Program], undefined>,
   'updateSectionCommittee' : ActorMethod<[SectionCommittee], undefined>,
+  'updateSentenceInBook' : ActorMethod<[string, Sentence], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

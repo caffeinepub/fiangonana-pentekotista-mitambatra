@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-startup-failure-that-shows-the-something-went-wrong-startup-screen-by-ensuring-actor-initialization-cannot-throw-unhandled-errors-during-app-boot-including-the-access-control-initialization-call-if-initialization-fails-surface-the-actual-error-to-the-ui-layer-and-console-rather-than-leaving-the-app-stuck-in-a-generic-startup-failure-state",
-      "featureTitle": "Fix the startup failure that shows the \"Something went wrong\" startup screen by ensuring actor initialization cannot throw unhandled errors during app boot (including the access-control initialization call). If initialization fails, surface the actual error to the UI layer (and console) rather than leaving the app stuck in a generic startup failure state.",
+      "featureId": "feature-add-react-query-hooks-for-the-new-backend-book-lesson-and-sentence-apis-list-get-details-create-update-delete-following-the-existing-patterns-in-frontend-src-hooks-usequeries-ts-including-cache-invalidation-for-edits",
+      "featureTitle": "Add React Query hooks for the new backend book/lesson and sentence APIs (list, get details, create/update/delete) following the existing patterns in frontend/src/hooks/useQueries.ts, including cache invalidation for edits.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/hooks/useSafeActor.ts"
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,17 +16,18 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-6"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-improve-the-startuperrorscreen-flow-so-the-retry-action-fully-retries-startup-by-re-initializing-both-the-backend-actor-and-the-profile-query-not-only-refetching-the-profile",
-      "featureTitle": "Improve the StartupErrorScreen flow so the Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+      "featureId": "feature-add-a-new-book-reader-area-to-the-app-ui-with-routing-and-navigation-entry-without-breaking-existing-pages-include-1-a-library-list-page-to-select-a-book-lesson-and-2-a-reader-page-that-displays-the-ordered-chinese-sentences-for-the-selected-content",
+      "featureTitle": "Add a new ‘Book Reader’ area to the app UI with routing and navigation entry, without breaking existing pages. Include: (1) a library/list page to select a book/lesson, and (2) a reader page that displays the ordered Chinese sentences for the selected content.",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/StartupErrorScreen.tsx",
-        "frontend/src/hooks/useStartupRetry.ts"
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/pages/BookLibraryPage.tsx",
+        "frontend/src/pages/BookReaderPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -39,15 +38,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-7"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-change-any-startup-loading-user-facing-text-that-is-currently-in-french-e-g-chargement-to-english",
-      "featureTitle": "Change any startup/loading user-facing text that is currently in French (e.g., \"Chargement...\") to English.",
+      "featureId": "feature-implement-in-browser-text-to-speech-playback-for-each-chinese-sentence-in-the-reader-page-using-the-web-speech-api-speechsynthesis-provide-per-sentence-controls-play-stop-and-an-option-to-autoplay-the-next-sentence-set-the-utterance-language-to-chinese-e-g-zh-cn-and-expose-basic-controls-for-rate-and-pitch",
+      "featureTitle": "Implement in-browser text-to-speech playback for each Chinese sentence in the reader page using the Web Speech API (speechSynthesis). Provide per-sentence controls: Play, Stop, and an option to autoplay the next sentence. Set the utterance language to Chinese (e.g., 'zh-CN') and expose basic controls for rate and pitch.",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/components/bookReader/SentenceTtsControls.tsx",
+        "frontend/src/hooks/useSpeechSynthesis.ts",
+        "frontend/src/pages/BookReaderPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -58,17 +59,17 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-8"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-minimal-startup-diagnostics-to-help-identify-future-boot-failures-when-the-startup-error-screen-is-shown-include-a-compact-user-safe-error-summary-no-secrets-tokens-and-always-log-the-full-error-to-the-browser-console",
-      "featureTitle": "Add minimal startup diagnostics to help identify future boot failures: when the startup error screen is shown, include a compact, user-safe error summary (no secrets/tokens), and always log the full error to the browser console.",
+      "featureId": "feature-add-a-simple-content-editor-ui-to-allow-entering-the-book-content-from-the-user-s-book-create-edit-a-book-lesson-and-add-edit-reorder-chinese-sentences-this-editor-must-use-the-backend-crud-apis-not-hardcoded-seed-only-content",
+      "featureTitle": "Add a simple content editor UI to allow entering the book content from the user’s book: create/edit a book/lesson and add/edit/reorder Chinese sentences. This editor must use the backend CRUD APIs (not hardcoded seed-only content).",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/StartupErrorScreen.tsx",
-        "frontend/src/utils/startupDiagnostics.ts"
+        "frontend/src/pages/BookEditorPage.tsx",
+        "frontend/src/pages/BookLibraryPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -79,7 +80,49 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-4"
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-cohesive-visual-theme-appropriate-for-a-reading-app-e-g-warm-paper-like-background-high-contrast-typography-subtle-ink-accents-and-enforce-it-consistently-across-the-new-book-reader-pages-while-still-fitting-the-existing-tailwind-shadcn-styling-system",
+      "featureTitle": "Apply a cohesive visual theme appropriate for a reading app (e.g., warm paper-like background, high-contrast typography, subtle ink accents) and enforce it consistently across the new Book Reader pages while still fitting the existing Tailwind/shadcn styling system.",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/src/pages/BookEditorPage.tsx",
+        "frontend/src/pages/BookLibraryPage.tsx",
+        "frontend/src/pages/BookReaderPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-generated-static-image-assets-for-the-book-reader-module-and-render-them-from-frontend-public-assets-generated-do-not-serve-images-through-the-backend",
+      "featureTitle": "Add generated static image assets for the Book Reader module and render them from frontend/public/assets/generated (do not serve images through the backend).",
+      "files": [
+        "frontend/src/components/GeneratedAssetsPreview.tsx",
+        "frontend/src/pages/BookLibraryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
       ],
       "confidence": "high"
     }

@@ -1,8 +1,8 @@
 {
-  "frontend/src/App.tsx": "Main application component with split authentication gates that now use useSafeActor for robust error handling, display sanitized error messages on startup failure, implement full retry with actor reinitialization, and use English loading text.",
+  "frontend/src/App.tsx": "Main application component with routing for all pages including new Book Reader routes (library, reader, editor) integrated into existing authentication gates.",
   "frontend/src/contexts/SectionContext.tsx": "Section context provider managing the current selected section (Sampana) with persistence to user profile and helper functions.",
-  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations with proper cache invalidation, now using useSafeActor instead of useActor for improved error handling and startup reliability.",
-  "frontend/src/components/layout/AppLayout.tsx": "Main layout component with responsive header, navigation, safe-area support, and flexbox structure for proper mobile rendering.",
+  "frontend/src/hooks/useQueries.ts": "React Query hooks for all backend operations including new Book and Sentence CRUD operations with proper cache invalidation using useSafeActor for error handling.",
+  "frontend/src/components/layout/AppLayout.tsx": "Main layout component with responsive header, navigation including new Chinese Reader link, safe-area support, and mobile menu.",
   "frontend/src/components/CommitteeHeader.tsx": "Committee role display and assignment component showing President/Treasurer/Secretary with member selection dialogs.",
   "frontend/src/components/SyncStatus.tsx": "Sync status indicator showing loading state and last sync time from backend.",
   "frontend/src/pages/LoginPage.tsx": "Login page with Internet Identity integration, branding, and now includes the GeneratedAssetsPreview component for Android asset verification.",
@@ -12,7 +12,7 @@
   "frontend/src/pages/ProgramsPage.tsx": "Programs page (Programa) with date-based scheduling, devotion leader free text, and member selection for meeting leader, preacher, and song leader.",
   "frontend/src/pages/GroupsPage.tsx": "Groups management page with CRUD operations, member assignments, and integrated group financial reports dialog accessible via dollar sign button on each group card.",
   "frontend/src/pages/AttendancePage.tsx": "Attendance tracking page with present/absent marking, absence reasons, totals display, yearly top-5 statistics, and now displays in-app toast notifications when members reach 3 consecutive absences after saving an attendance record.",
-  "frontend/src/index.css": "Global styles with OKLCH color system, safe-area padding for notched devices, and mobile overflow prevention.",
+  "frontend/src/index.css": "Global styles with OKLCH color system, safe-area padding, and new reading-theme classes for warm paper-like backgrounds and high-contrast typography.",
   "frontend/src/components/groups/GroupFinancialReportsDialog.tsx": "Dialog component for managing group financial reports with list, create, edit, and delete operations sorted by date descending.",
   "frontend/src/components/financial/FinancialReportDetailsDialog.tsx": "Dialog component displaying detailed financial report breakdown including income sources, vows with member names, other income, expenses with descriptions, and group-linked deposits and expenses with originating group name badges; TransactionType is now imported as a value to enable runtime enum comparison.",
   "frontend/src/utils/memberAge.ts": "Utility functions to calculate and format member age from dateOfBirth string, returning null for invalid/missing/future dates and a placeholder \"—\" for display.",
@@ -26,7 +26,7 @@
   "frontend/android/app/src/main/res/values/styles.xml": "Android app theme configuration with primary colors, transparent status bar, and splash screen styling.",
   "frontend/android/app/src/main/res/values/colors.xml": "Android color resources defining primary, primary dark, and accent colors matching the app's green theme.",
   "frontend/BUILD_ANDROID.md": "Comprehensive Android APK build documentation with prerequisites, environment setup, step-by-step build instructions for debug/release APKs, signing guide, troubleshooting for common issues (SDK, memory, resources, cache), backend configuration, and quick reference commands.",
-  "frontend/src/components/GeneratedAssetsPreview.tsx": "Hidden component that preloads generated Android icon assets to ensure they are included in the build without affecting UI.",
+  "frontend/src/components/GeneratedAssetsPreview.tsx": "Hidden component preloading generated static assets including the new book-cover image for build verification.",
   "frontend/android/gradle.properties": "Gradle configuration file with AndroidX, Jetifier, memory settings, and build optimization flags for reliable Android builds.",
   "frontend/android/build.gradle": "Top-level Android Gradle build configuration with plugin dependencies and repository settings.",
   "frontend/android/app/build.gradle": "Android app module Gradle configuration with SDK versions, dependencies, APK output settings, and updated to Version 6 (versionCode 6, versionName \"6.0\").",
@@ -36,5 +36,10 @@
   "frontend/src/hooks/useSafeActor.ts": "Safe actor wrapper hook that handles backend connection with explicit error capture, skips access-control initialization when admin token is missing/empty, and provides a reinitialize mechanism for retry functionality.",
   "frontend/src/hooks/useStartupRetry.ts": "Orchestration hook that implements full startup retry by reinitializing the actor and refetching the user profile query.",
   "frontend/src/utils/startupDiagnostics.ts": "Utility functions for normalizing errors, sanitizing error messages (redacting secrets/tokens), creating user-safe error summaries, and logging detailed diagnostics to console.",
-  "frontend/src/main.tsx": "Application entry point with global error handlers for unhandled promise rejections and errors that log sanitized diagnostics to console."
+  "frontend/src/main.tsx": "Application entry point with global error handlers for unhandled promise rejections and errors that log sanitized diagnostics to console.",
+  "frontend/src/hooks/useSpeechSynthesis.ts": "Custom hook wrapping the Web Speech API for Chinese text-to-speech with configurable rate, pitch, language, and autoplay-next callback support.",
+  "frontend/src/components/bookReader/SentenceTtsControls.tsx": "Reusable TTS control component with Play/Stop buttons, autoplay toggle, rate/pitch sliders, and graceful fallback UI when speechSynthesis is unavailable.",
+  "frontend/src/pages/BookLibraryPage.tsx": "Book library page displaying all books with create/delete operations, hero section with cover image, and navigation to reader/editor views.",
+  "frontend/src/pages/BookReaderPage.tsx": "Book reader page rendering sentences with Chinese text, pinyin, English translation, grammar hints, and per-sentence TTS playback with autoplay-next support.",
+  "frontend/src/pages/BookEditorPage.tsx": "Book editor page for managing book metadata and CRUD operations on sentences with validation and reordering support."
 }

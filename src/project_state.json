@@ -1,48 +1,79 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Create an application based on a book, with a voice feature that reads Chinese sentences aloud.",
   "architectural_notes": [],
-  "known_issues": [
-    "Deployed draft (Version 8) builds successfully but fails to start; shows \"Something went wrong\" at n-1ns-draft.caffeine.xyz, indicating an internal runtime error."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Book cover illustration in a minimalist ink-on-paper style with Chinese calligraphy-like strokes and a subtle bamboo motif (book-cover.dim_1200x1600.png)",
   "existing_features": [
     {
-      "id": "feature-fix-the-startup-failure-that-shows-the-something-went-wrong-startup-screen-by-ensuring-actor-initialization-cannot-throw-unhandled-errors-during-app-boot-including-the-access-control-initialization-call-if-initialization-fails-surface-the-actual-error-to-the-ui-layer-and-console-rather-than-leaving-the-app-stuck-in-a-generic-startup-failure-state",
-      "title": "Fix the startup failure that shows the \"Something went wrong\" startup screen by ensuring actor initialization cannot throw unhandled errors during app boot (including the access-control initialization call). If initialization fails, surface the actual error to the UI layer (and console) rather than leaving the app stuck in a generic startup failure state.",
+      "id": "feature-add-react-query-hooks-for-the-new-backend-book-lesson-and-sentence-apis-list-get-details-create-update-delete-following-the-existing-patterns-in-frontend-src-hooks-usequeries-ts-including-cache-invalidation-for-edits",
+      "title": "Add React Query hooks for the new backend book/lesson and sentence APIs (list, get details, create/update/delete) following the existing patterns in frontend/src/hooks/useQueries.ts, including cache invalidation for edits.",
       "reqIds": [
-        "REQ-1"
+        "REQ-6"
       ],
       "version": 1
     },
     {
-      "id": "feature-improve-the-startuperrorscreen-flow-so-the-retry-action-fully-retries-startup-by-re-initializing-both-the-backend-actor-and-the-profile-query-not-only-refetching-the-profile",
-      "title": "Improve the StartupErrorScreen flow so the Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
+      "id": "feature-add-a-new-book-reader-area-to-the-app-ui-with-routing-and-navigation-entry-without-breaking-existing-pages-include-1-a-library-list-page-to-select-a-book-lesson-and-2-a-reader-page-that-displays-the-ordered-chinese-sentences-for-the-selected-content",
+      "title": "Add a new ‘Book Reader’ area to the app UI with routing and navigation entry, without breaking existing pages. Include: (1) a library/list page to select a book/lesson, and (2) a reader page that displays the ordered Chinese sentences for the selected content.",
       "reqIds": [
-        "REQ-2"
+        "REQ-7"
       ],
       "version": 1
     },
     {
-      "id": "feature-change-any-startup-loading-user-facing-text-that-is-currently-in-french-e-g-chargement-to-english",
-      "title": "Change any startup/loading user-facing text that is currently in French (e.g., \"Chargement...\") to English.",
+      "id": "feature-implement-in-browser-text-to-speech-playback-for-each-chinese-sentence-in-the-reader-page-using-the-web-speech-api-speechsynthesis-provide-per-sentence-controls-play-stop-and-an-option-to-autoplay-the-next-sentence-set-the-utterance-language-to-chinese-e-g-zh-cn-and-expose-basic-controls-for-rate-and-pitch",
+      "title": "Implement in-browser text-to-speech playback for each Chinese sentence in the reader page using the Web Speech API (speechSynthesis). Provide per-sentence controls: Play, Stop, and an option to autoplay the next sentence. Set the utterance language to Chinese (e.g., 'zh-CN') and expose basic controls for rate and pitch.",
       "reqIds": [
-        "REQ-3"
+        "REQ-8"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-minimal-startup-diagnostics-to-help-identify-future-boot-failures-when-the-startup-error-screen-is-shown-include-a-compact-user-safe-error-summary-no-secrets-tokens-and-always-log-the-full-error-to-the-browser-console",
-      "title": "Add minimal startup diagnostics to help identify future boot failures: when the startup error screen is shown, include a compact, user-safe error summary (no secrets/tokens), and always log the full error to the browser console.",
+      "id": "feature-add-a-simple-content-editor-ui-to-allow-entering-the-book-content-from-the-user-s-book-create-edit-a-book-lesson-and-add-edit-reorder-chinese-sentences-this-editor-must-use-the-backend-crud-apis-not-hardcoded-seed-only-content",
+      "title": "Add a simple content editor UI to allow entering the book content from the user’s book: create/edit a book/lesson and add/edit/reorder Chinese sentences. This editor must use the backend CRUD APIs (not hardcoded seed-only content).",
       "reqIds": [
-        "REQ-4"
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-cohesive-visual-theme-appropriate-for-a-reading-app-e-g-warm-paper-like-background-high-contrast-typography-subtle-ink-accents-and-enforce-it-consistently-across-the-new-book-reader-pages-while-still-fitting-the-existing-tailwind-shadcn-styling-system",
+      "title": "Apply a cohesive visual theme appropriate for a reading app (e.g., warm paper-like background, high-contrast typography, subtle ink accents) and enforce it consistently across the new Book Reader pages while still fitting the existing Tailwind/shadcn styling system.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-image-assets-for-the-book-reader-module-and-render-them-from-frontend-public-assets-generated-do-not-serve-images-through-the-backend",
+      "title": "Add generated static image assets for the Book Reader module and render them from frontend/public/assets/generated (do not serve images through the backend).",
+      "reqIds": [
+        "REQ-11"
       ],
       "version": 1
     }
   ],
-  "new_feature_requests": [],
-  "projectName": "Fix deployed draft startup crash and make retry reinitialize actor/profile",
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Build an app based on the provided book content, including text-to-speech voice playback that reads Chinese sentences/phrases aloud.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add backend support for storing “book-based” Chinese reading content as structured data (e.g., books/lessons with ordered Chinese sentences) and expose query + mutation methods to: (1) list available books/lessons, (2) fetch a single book/lesson with its sentences in order, and (3) create/update/delete books/lessons and sentences.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Add a Chinese book reader module with text-to-speech playback for Chinese sentences",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

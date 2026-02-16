@@ -1,103 +1,162 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Harden startup initialization, improve retry, and add safe diagnostics",
+  "title": "Chinese Book Reader module with library, editor, and Web Speech TTS",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Prevent unhandled startup initialization errors and surface real initialization failures (including access-control init) without trapping on missing admin token",
+      "id": "REQ-6",
+      "summary": "Add React Query hooks for book/lesson + sentence list/detail + CRUD with proper cache invalidation.",
       "acceptanceCriteria": [
-        "Loading the draft URL no longer immediately shows the startup error screen on a healthy network.",
-        "If backend/agent/actor initialization fails, the error is captured (no unhandled promise rejection) and is available to display/log for debugging.",
-        "The app does not trap solely because an admin token is missing/empty; startup works without providing any admin token."
+        "New hooks exist for listing books/lessons, fetching a selected book/lesson, and mutating content.",
+        "Mutations invalidate/refetch the correct queries so the UI updates immediately after edits.",
+        "Hooks handle the ‘actor not available’ state consistently with existing hooks."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSafeActor.ts",
-          "operation": "create",
-          "description": "Create a wrapper actor hook that composes the backend connection setup but adds: (1) explicit try/catch around actor creation and access-control initialization, (2) skipping access-control initialization when the admin token is missing/empty, (3) an exposed initialization error for the UI layer, and (4) a re-initialization trigger mechanism (e.g., attempt counter) to force a fresh actor boot. Ensure behavior aligns with the authorization component expectations for access-control initialization. Verify the component's usage instructions before implementing."
-        },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update queries that currently depend on useActor() to depend on the new useSafeActor() hook so that startup failures can be detected and surfaced consistently, and so query enabling reflects the safe actor readiness state."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Switch startup gating logic (AuthenticatedGate) to use the safe actor hook and display a startup error screen with the actual captured initialization/profile error rather than a generic failure state. Ensure actor initialization errors are not treated as a permanent stuck state and are visible for debugging."
+          "description": "Add Book Reader data hooks following existing patterns: useListBooks, useGetBook(bookId), and mutation hooks for create/update/delete book plus add/update/delete sentence; ensure query keys (e.g., ['books'], ['book', bookId]) and invalidation/refetch behavior keep library/reader/editor UI consistent; keep 'Actor not available' handling consistent with existing hooks. (Selected component: authorization — keep usage consistent with existing authenticated data access patterns; Verify the component's usage instructions before implementing.)"
         }
       ]
     },
     {
-      "id": "REQ-2",
-      "summary": "Make StartupErrorScreen Retry fully re-run startup by reinitializing actor and then refetching the profile",
+      "id": "REQ-7",
+      "summary": "Add Book Reader UI area with navigation + routes for library and reader pages.",
       "acceptanceCriteria": [
-        "Tapping Retry triggers a fresh actor initialization attempt and then re-runs the user profile fetch.",
-        "If the initial failure was transient (e.g., a temporary agent/replica error), Retry can recover without a hard refresh.",
-        "Retry does not require navigating away or clearing storage manually."
+        "A new navigation item is visible in the main layout and leads to the new book reader pages.",
+        "Users can see a list of available books/lessons and open one.",
+        "The reader view renders the Chinese sentences in the correct order and remains usable on mobile screens."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useStartupRetry.ts",
+          "path": "frontend/src/pages/BookLibraryPage.tsx",
           "operation": "create",
-          "description": "Add a small orchestration hook used by startup gates to implement a single Retry action that (1) triggers a fresh actor initialization attempt (via the safe actor hook re-init trigger) and then (2) re-runs the current user profile query once the actor is ready."
+          "description": "Create a library/list page that uses the new hooks to display available books/lessons and allows selecting one to open in the reader; include responsive layout suitable for mobile. Use shadcn-ui components for cards/buttons/inputs/layout; Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update StartupErrorScreen wiring so Retry calls the startup retry orchestrator (fresh actor init + profile refetch), rather than only refetching the profile."
-        },
-        {
-          "path": "frontend/src/components/StartupErrorScreen.tsx",
-          "operation": "modify",
-          "description": "Extend the component props to support a disabled/loading Retry state while a retry is in progress, to avoid double-submits and to reflect that a full startup re-attempt is underway."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Change French startup/loading text to English",
-      "acceptanceCriteria": [
-        "All loading states shown during app startup use English text (e.g., \"Loading...\").",
-        "No French strings remain in the startup gates (AuthGate/AuthenticatedGate) loading UI."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Replace French startup loading copy (e.g., \"Chargement...\") with English equivalents (e.g., \"Loading...\") in both AuthGate and AuthenticatedGate loading UI."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Add minimal, user-safe startup diagnostics with sanitized UI summary and console logging",
-      "acceptanceCriteria": [
-        "When startup fails, the UI shows a short error summary (e.g., \"Initialization failed\" + a sanitized message).",
-        "No secret values (e.g., any admin token) are rendered to the screen or logged.",
-        "The console contains enough detail (stack/message) to debug the root cause."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/startupDiagnostics.ts",
+          "path": "frontend/src/pages/BookReaderPage.tsx",
           "operation": "create",
-          "description": "Add utilities to normalize unknown thrown values into an Error-like shape and to sanitize error messages for display/logging (redact any occurrences of secret/token-like parameters such as caffeineAdminToken/caffeineAdminToken-like patterns). Provide helpers for producing a compact user-safe summary and a console-safe detailed log payload."
-        },
-        {
-          "path": "frontend/src/components/StartupErrorScreen.tsx",
-          "operation": "modify",
-          "description": "Update the startup error UI to render a compact, user-safe error summary (sanitized) when present, while keeping the overall screen minimal and readable. Ensure no sensitive values are shown."
+          "description": "Create a reader page that fetches the selected book/lesson by route param and renders its sentences in deterministic order (as provided by backend), optimized for mobile reading. Use shadcn-ui components for layout/controls; Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Pass captured startup errors (actor init error or profile query error) into StartupErrorScreen as sanitized summaries, and ensure the full (sanitized) error detail is always logged to the browser console when the startup error screen is shown."
+          "description": "Register new TanStack Router routes for the Book Reader area (library route and reader route) under the existing root route without removing or breaking existing pages (Members, Financial, Programs, Groups, Attendance). Wire routes so navigation works end-to-end."
         },
         {
-          "path": "frontend/src/main.tsx",
+          "path": "frontend/src/components/layout/AppLayout.tsx",
           "operation": "modify",
-          "description": "Add global startup diagnostics handlers for window 'unhandledrejection' and 'error' that log sanitized details to the console (without rendering secrets), to prevent silent failures during boot from being missed."
+          "description": "Add a new navigation item in the main layout navItems for the Book Reader area, keeping existing navigation intact and ensuring mobile menu behavior remains correct. Use existing shadcn-ui Button/Sheet composition; Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Implement per-sentence in-browser Chinese text-to-speech with Play/Stop, autoplay next, and rate/pitch controls using Web Speech API.",
+      "acceptanceCriteria": [
+        "Each sentence row has a Play control that reads the Chinese text aloud.",
+        "Stop immediately cancels current playback.",
+        "When Autoplay is enabled, finishing one sentence automatically starts the next sentence.",
+        "Speech uses a Chinese language tag (e.g., 'zh-CN') and the UI offers rate and pitch controls that affect playback.",
+        "If speechSynthesis is unavailable, the UI shows a clear fallback message and does not crash."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useSpeechSynthesis.ts",
+          "operation": "create",
+          "description": "Create a dedicated hook wrapping the Web Speech API (speechSynthesis) to manage speaking state, cancellation, per-utterance configuration (lang 'zh-CN', rate, pitch), and an autoplay-next mechanism that can trigger playback of the next sentence upon onend."
+        },
+        {
+          "path": "frontend/src/components/bookReader/SentenceTtsControls.tsx",
+          "operation": "create",
+          "description": "Create a reusable per-sentence control UI (Play/Stop + autoplay toggle + rate/pitch controls) using the useSpeechSynthesis hook, with a clear fallback message if speechSynthesis is unavailable. Use shadcn-ui components for buttons/switch/slider/form controls; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/BookReaderPage.tsx",
+          "operation": "modify",
+          "description": "Wire SentenceTtsControls into each sentence row in the reader page, ensuring Play/Stop works per sentence, autoplay-next advances in the displayed order, and rate/pitch settings affect playback. Ensure graceful fallback UI when the Web Speech API is not available."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Add a content editor UI to create/edit books and add/edit/delete/reorder sentences using backend CRUD methods.",
+      "acceptanceCriteria": [
+        "Users can create a new book/lesson with a title.",
+        "Users can add, edit, delete, and reorder sentences for a book/lesson.",
+        "Changes persist after refresh and are visible in the library and reader views.",
+        "Editor provides basic validation (non-empty title; non-empty Chinese sentence)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/BookEditorPage.tsx",
+          "operation": "create",
+          "description": "Create an editor page that uses the book and sentence mutation hooks to create/update/delete books and add/update/delete sentences, including sentence reordering (by persisting updated sentence order via existing backend mutation capabilities). Provide basic validation for required fields (non-empty title and non-empty Chinese sentence). Use shadcn-ui components for forms/dialogs/tables/buttons; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/BookLibraryPage.tsx",
+          "operation": "modify",
+          "description": "Add entry points from the library page to create a new book and to open the editor for an existing book, ensuring the UI uses backend-backed CRUD (no hardcoded seed-only content). Use shadcn-ui dialogs/buttons for create flows; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add routing for the editor UI (e.g., a nested route under the Book Reader area) and ensure it is reachable from the library/reader without breaking existing routes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Apply a cohesive reading-app visual theme to the new Book Reader pages while fitting existing Tailwind/shadcn styling.",
+      "acceptanceCriteria": [
+        "Book Reader pages have a consistent, readable visual style (spacing, typography, colors) suitable for long text reading.",
+        "UI remains accessible (readable contrast, clear focus states) and responsive on mobile and desktop."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add theme support classes/utilities (using Tailwind layers) to provide a warm paper-like background, high-contrast typography, and subtle ink accents specifically for Book Reader pages, while staying consistent with the existing CSS variables and shadcn/Tailwind design system."
+        },
+        {
+          "path": "frontend/src/pages/BookLibraryPage.tsx",
+          "operation": "modify",
+          "description": "Apply the reading-app theme styles (paper-like background/typography spacing) to the library UI in a consistent and accessible way; ensure responsiveness on mobile/desktop. Use shadcn-ui layout primitives where appropriate; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/BookReaderPage.tsx",
+          "operation": "modify",
+          "description": "Apply the reading-app theme styles to the reader UI, ensuring sentence rows remain readable, controls have clear focus states, and the view works well on mobile screens. Use shadcn-ui components for consistent styling; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/BookEditorPage.tsx",
+          "operation": "modify",
+          "description": "Apply the same theme styling to the editor to keep the Book Reader area visually cohesive while maintaining form readability and accessibility. Use shadcn-ui components; Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Add and render required generated static image assets for the Book Reader module from frontend/public/assets/generated.",
+      "acceptanceCriteria": [
+        "The new generated image(s) exist under frontend/public/assets/generated and are referenced directly by the new UI.",
+        "Assets load correctly in the web build without backend involvement."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/book-cover.dim_1200x1600.png",
+          "operation": "create",
+          "description": "Add the generated static Book Reader cover image asset at frontend/public/assets/generated/book-cover.dim_1200x1600.png."
+        },
+        {
+          "path": "frontend/src/pages/BookLibraryPage.tsx",
+          "operation": "modify",
+          "description": "Reference and render the generated cover image from frontend/public/assets/generated/book-cover.dim_1200x1600.png in the Book Reader library UI (e.g., module header/hero section) so it is included and visible without any backend involvement."
+        },
+        {
+          "path": "frontend/src/components/GeneratedAssetsPreview.tsx",
+          "operation": "modify",
+          "description": "Optionally reference frontend/public/assets/generated/book-cover.dim_1200x1600.png in the hidden asset preloader component to help ensure the asset is included across builds. Verify the component's usage instructions before implementing."
         }
       ]
     }

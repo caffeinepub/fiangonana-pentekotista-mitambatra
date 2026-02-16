@@ -23,6 +23,17 @@ export interface Group {
     memberIds: Array<string>;
     secretaryId: string;
 }
+export interface Book {
+    id: string;
+    sentences: Array<Sentence>;
+    title: string;
+    topic?: string;
+    createdAt: bigint;
+    type: string;
+    level: string;
+    author: string;
+    updatedAt: bigint;
+}
 export interface VowEntry {
     memberIds: Array<string>;
     amount: bigint;
@@ -35,6 +46,15 @@ export interface LinkedGroupFinancialEntry {
     updatedAt: bigint;
     groupTransactionId: string;
     amount: bigint;
+}
+export interface Sentence {
+    id: string;
+    grammaticHints?: string;
+    createdAt: bigint;
+    chinese: string;
+    updatedAt: bigint;
+    pinyin: string;
+    english: string;
 }
 export interface SectionCommittee {
     treasurerId?: string;
@@ -136,20 +156,25 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addSentenceToBook(bookId: string, sentence: Sentence): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createAttendanceRecord(record: AttendanceRecord): Promise<string>;
+    createBook(book: Book): Promise<string>;
     createFinancialReport(report: FinancialReport): Promise<string>;
     createGroup(group: Group): Promise<string>;
     createGroupFinancialReport(report: GroupFinancialReport): Promise<string>;
     createMember(member: Member): Promise<string>;
     createProgram(program: Program): Promise<string>;
     deleteAttendanceRecord(recordId: string): Promise<void>;
+    deleteBook(bookId: string): Promise<void>;
     deleteFinancialReport(reportId: string): Promise<void>;
     deleteGroup(groupId: string): Promise<void>;
     deleteGroupFinancialReport(reportId: string): Promise<void>;
     deleteMember(memberId: string): Promise<void>;
     deleteProgram(programId: string): Promise<void>;
+    deleteSentenceFromBook(bookId: string, sentenceId: string): Promise<void>;
     getAttendanceRecord(recordId: string): Promise<AttendanceRecord | null>;
+    getBook(bookId: string): Promise<Book | null>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFinancialReport(reportId: string): Promise<FinancialReport | null>;
@@ -164,6 +189,7 @@ export interface backendInterface {
     initializeCommitteeCredentials(users: Array<Principal>): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
     listAttendanceRecords(sectionId: string): Promise<Array<AttendanceRecord>>;
+    listBooks(): Promise<Array<Book>>;
     listFinancialReports(sectionId: string): Promise<Array<FinancialReport>>;
     listGroupFinancialReports(groupId: string): Promise<Array<GroupFinancialReport>>;
     listGroups(sectionId: string): Promise<Array<Group>>;
@@ -172,10 +198,12 @@ export interface backendInterface {
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     saveMonthlyRemark(remark: MonthlyRemark): Promise<void>;
     updateAttendanceRecord(record: AttendanceRecord): Promise<void>;
+    updateBook(book: Book): Promise<void>;
     updateFinancialReport(report: FinancialReport): Promise<void>;
     updateGroup(group: Group): Promise<void>;
     updateGroupFinancialReport(report: GroupFinancialReport): Promise<void>;
     updateMember(member: Member): Promise<void>;
     updateProgram(program: Program): Promise<void>;
     updateSectionCommittee(committee: SectionCommittee): Promise<void>;
+    updateSentenceInBook(bookId: string, sentence: Sentence): Promise<void>;
 }

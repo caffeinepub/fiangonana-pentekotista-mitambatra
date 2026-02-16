@@ -1,13 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the deployed draft startup crash and make the startup Retry action fully re-run initialization, while ensuring startup/loading copy is in English and failures surface useful (sanitized) diagnostics.
+**Goal:** Add a Chinese “Book Reader” module where users can manage structured book/lesson content and listen to each Chinese sentence via in-browser text-to-speech.
 
 **Planned changes:**
-- Harden app boot/initialization so actor/agent/access-control initialization cannot fail via unhandled errors; capture and surface initialization failures to the UI and log details to the console.
-- Ensure startup does not block solely due to a missing/empty admin token (continue without it).
-- Update the StartupErrorScreen Retry flow to re-initialize the backend actor and then re-run the profile query (not just refetching profile).
-- Replace any French startup/loading UI text with English (e.g., change “Chargement...” to “Loading...”).
-- Add minimal startup diagnostics on the error screen: a compact, user-safe error summary in the UI (no secrets), while logging full error details to the browser console.
+- Add backend structured storage and CRUD/query methods for books/lessons and ordered sentences within the existing single-actor canister.
+- Add React Query hooks for listing books/lessons, fetching a selected book/lesson, and creating/updating/deleting books/lessons and sentences with proper cache invalidation.
+- Add a new Book Reader UI area with navigation and routes: a library/list view and a reader view that renders sentences in deterministic order and works on mobile.
+- Implement per-sentence Web Speech API (speechSynthesis) playback with Play/Stop, optional autoplay-next, and basic rate/pitch controls, including a clear fallback when unavailable.
+- Add an editor UI to create/edit books/lessons and add/edit/delete/reorder sentences, persisting changes via backend APIs with basic validation.
+- Apply a cohesive reading-focused visual theme across the new Book Reader pages while fitting existing Tailwind/shadcn styling.
+- Add and reference generated static image asset(s) for the Book Reader module from `frontend/public/assets/generated`.
 
-**User-visible outcome:** Loading the draft URL no longer immediately shows the generic startup failure on a healthy network; if startup fails, users see a concise error summary and can tap Retry to re-attempt full initialization and recover from transient errors without a hard refresh.
+**User-visible outcome:** Users can create/import their Chinese reading content as books/lessons, browse a library, open a reader that shows sentences in order, and play each sentence aloud with optional autoplay and voice controls.

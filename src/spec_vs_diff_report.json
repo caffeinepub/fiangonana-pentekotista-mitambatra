@@ -1,41 +1,78 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T06:59:37.756Z",
-  "summary": "Core startup reliability work appears implemented via a new useSafeActor hook (guarding access-control init and capturing init errors), English loading text in App gates, and a StartupErrorScreen that can display a sanitized error message while logging to console. However, the Retry implementation likely does not actually reinitialize the same actor instance used by the app gate because it calls useSafeActor from a separate hook instance. Additionally, a backend migration module and explicit migration wiring were added without an explicit requirement indicating a stable-state schema upgrade was needed.",
+  "generatedAt": "2026-02-16T09:57:54.294Z",
+  "summary": "Diff adds a Book Reader module with new pages (library/reader/editor), React Query hooks for book/sentence CRUD, in-browser speechSynthesis TTS controls (play/stop/autoplay, rate/pitch, zh-CN, fallback UI), theme styling for reading pages, backend types/state migration for books, and navigation entry. However, deterministic sentence ordering/reordering support is not clearly implemented, and the required generated image asset file itself is not evidenced as added. Several unrelated features (Android build assets/config, member age display, attendance absence toasts, financial/groups tweaks) were also introduced beyond the request.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "Retry action fully retries startup by re-initializing both the backend actor and the profile query (not only refetching the profile).",
-      "reason": "The retry logic uses `useStartupRetry`, which internally calls `useSafeActor()` again and invokes `reinitialize()` from that separate hook instance. Since `useSafeActor`’s `attemptCounter` state is local to each hook instance, incrementing it in `useStartupRetry` may not affect the `useSafeActor` instance used by `AuthenticatedGate`, so the actor may not actually be re-initialized for the running gate (only the profile query is invalidated/refetched).",
+      "id": "REQ-5",
+      "requirement": "Backend must define stable Motoko types for books/lessons and sentence entries with deterministic ordering (e.g., explicit index/order field).",
+      "reason": "The diff shows Book includes `sentences : [Sentence]`, but the `Sentence` type shown has no explicit `order`/`index` field, so deterministic ordering beyond array position is not evidenced.",
       "evidence": [
-        "frontend/src/hooks/useStartupRetry.ts",
-        "frontend/src/hooks/useSafeActor.ts",
-        "frontend/src/App.tsx"
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "requirement": "Editor UI must support reordering sentences for a book/lesson (persisted via backend CRUD).",
+      "reason": "Editor page shows sentence CRUD fields and a `GripVertical` icon, but the diff snippet does not show any implemented reorder UI logic or a corresponding backend/hook method to persist sentence order changes.",
+      "evidence": [
+        "frontend/src/pages/BookEditorPage.tsx",
+        "frontend/src/hooks/useQueries.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "requirement": "Add generated static image assets under `frontend/public/assets/generated` (including the required book cover) and reference them from the UI.",
+      "reason": "UI references `/assets/generated/book-cover.dim_1200x1600.png`, but the diff summary does not show the image file(s) actually added under `frontend/public/assets/generated`.",
+      "evidence": [
+        "frontend/src/pages/BookLibraryPage.tsx",
+        "frontend/src/components/GeneratedAssetsPreview.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Added backend stable-state migration module and wired the actor to use explicit migration `(with migration = Migration.run)`.",
-      "reason": "BuildRequest allows adding `migration.mo` only if a stable-state schema upgrade is required, but no requirement/AC calls for a schema migration. The diff introduces `backend/migration.mo` and imports/uses it in `backend/main.mo` regardless.",
+      "description": "Android/Capacitor packaging additions (Capacitor config + Android icon preloads) unrelated to the Book Reader requirements.",
+      "reason": "BuildRequest only asked for a Book Reader module and a generated book cover asset; it did not request Android packaging work or Android icon assets.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo"
+        "frontend/capacitor.config.ts",
+        "frontend/src/components/GeneratedAssetsPreview.tsx"
+      ]
+    },
+    {
+      "description": "Unrelated feature changes: member age column/utility, attendance consecutive-absence toast notifications, and financial/groups page enhancements.",
+      "reason": "BuildRequest explicitly focused on adding the Book Reader module alongside existing routes/pages, not changing existing domain features.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Additional generated assets referenced in layout/header (e.g., header pattern, app logo) beyond the requested book cover image.",
+      "reason": "REQ-11 only requires generated assets for the Book Reader module (explicitly the book cover). The diff indicates extra generated images being used globally.",
+      "evidence": [
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/components/GeneratedAssetsPreview.tsx"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.66,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
-    "frontend/src/components/StartupErrorScreen.tsx",
+    "frontend/src/components/GeneratedAssetsPreview.tsx",
+    "frontend/src/components/bookReader/SentenceTtsControls.tsx",
+    "frontend/src/components/layout/AppLayout.tsx",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/hooks/useSafeActor.ts",
-    "frontend/src/hooks/useStartupRetry.ts",
-    "frontend/src/utils/startupDiagnostics.ts",
+    "frontend/src/hooks/useSpeechSynthesis.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/BookEditorPage.tsx",
+    "frontend/src/pages/BookLibraryPage.tsx",
+    "frontend/src/pages/BookReaderPage.tsx",
     "project_state.json"
   ]
 }

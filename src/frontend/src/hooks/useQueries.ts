@@ -11,6 +11,8 @@ import type {
   AttendanceRecord,
   SectionCommittee,
   UserProfile,
+  Book,
+  Sentence,
 } from '../backend';
 
 // User Profile Queries
@@ -46,6 +48,127 @@ export function useSaveCallerUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
+// Book Queries
+export function useListBooks() {
+  const { actor, isFetching } = useSafeActor();
+
+  return useQuery<Book[]>({
+    queryKey: ['books'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.listBooks();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetBook(bookId: string | null) {
+  const { actor, isFetching } = useSafeActor();
+
+  return useQuery<Book | null>({
+    queryKey: ['book', bookId],
+    queryFn: async () => {
+      if (!actor || !bookId) return null;
+      return actor.getBook(bookId);
+    },
+    enabled: !!actor && !isFetching && !!bookId,
+  });
+}
+
+export function useCreateBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (book: Book) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.createBook(book);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+}
+
+export function useUpdateBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (book: Book) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateBook(book);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+      queryClient.invalidateQueries({ queryKey: ['book', variables.id] });
+    },
+  });
+}
+
+export function useDeleteBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (bookId: string) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.deleteBook(bookId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+}
+
+export function useAddSentenceToBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ bookId, sentence }: { bookId: string; sentence: Sentence }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.addSentenceToBook(bookId, sentence);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['book', variables.bookId] });
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+}
+
+export function useUpdateSentenceInBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ bookId, sentence }: { bookId: string; sentence: Sentence }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateSentenceInBook(bookId, sentence);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['book', variables.bookId] });
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+}
+
+export function useDeleteSentenceFromBook() {
+  const { actor } = useSafeActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ bookId, sentenceId }: { bookId: string; sentenceId: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.deleteSentenceFromBook(bookId, sentenceId);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['book', variables.bookId] });
+      queryClient.invalidateQueries({ queryKey: ['books'] });
     },
   });
 }

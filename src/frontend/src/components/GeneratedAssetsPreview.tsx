@@ -11,6 +11,8 @@ export function GeneratedAssetsPreview() {
       <img src="/assets/generated/android-app-icon.dim_512x512.png" alt="" />
       <img src="/assets/generated/android-adaptive-foreground.dim_432x432.png" alt="" />
       <img src="/assets/generated/android-adaptive-background.dim_432x432.png" alt="" />
+      {/* Preload Book Reader cover image */}
+      <img src="/assets/generated/book-cover.dim_1200x1600.png" alt="" />
     </div>
   );
 }

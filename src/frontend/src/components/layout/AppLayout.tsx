@@ -2,7 +2,7 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSection } from '../../contexts/SectionContext';
-import { Users, DollarSign, Calendar, UsersRound, ClipboardCheck, LogOut, Menu } from 'lucide-react';
+import { Users, DollarSign, Calendar, UsersRound, ClipboardCheck, BookOpen, LogOut, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
@@ -27,9 +27,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { path: '/programs', label: 'Programa', icon: Calendar },
     { path: '/groups', label: 'Groupe', icon: UsersRound },
     { path: '/attendance', label: 'Fahatongavana', icon: ClipboardCheck },
+    { path: '/books', label: 'Chinese Reader', icon: BookOpen },
   ];
 
   const isActive = (path: string) => {
+    if (path === '/books') {
+      return routerState.location.pathname.startsWith('/books');
+    }
     return routerState.location.pathname === path || (path === '/members' && routerState.location.pathname === '/');
   };
 
@@ -76,10 +80,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               />
               <div className="min-w-0">
                 <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground break-words">
-                  FIANGONANA PENTEKOTISTA MITAMBATRA
+                  Vondrona.mn
                 </h1>
                 {currentSection && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
                     {getSectionLabel(currentSection)}
                   </p>
                 )}
@@ -88,63 +92,75 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="flex items-center gap-2 flex-shrink-0">
               <SyncStatus />
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="hidden sm:flex"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Hivoaka</span>
+                Logout
               </Button>
+              
+              {/* Mobile Menu */}
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-64">
+                  <nav className="flex flex-col gap-2 mt-8">
+                    <NavLinks />
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="justify-start"
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      Logout
+                    </Button>
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
 
-          {currentSection && <CommitteeHeader />}
+          <CommitteeHeader />
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="border-b bg-card flex-shrink-0">
+      {/* Desktop Navigation */}
+      <nav className="border-b bg-card hidden lg:block flex-shrink-0">
         <div className="container mx-auto px-4">
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex gap-2 py-2 overflow-x-auto">
+          <div className="flex gap-2 py-2">
             <NavLinks />
-          </div>
-
-          {/* Mobile Navigation */}
-          <div className="md:hidden py-2">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Menu className="h-5 w-5 mr-2" />
-                  Menu
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left">
-                <div className="flex flex-col gap-2 mt-8">
-                  <NavLinks />
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 flex-grow">
+      <main className="flex-1 overflow-y-auto">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-card mt-12 flex-shrink-0">
-        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>
-            © {new Date().getFullYear()} · Built with ❤️ using{' '}
-            <a
-              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              caffeine.ai
-            </a>
-          </p>
+      <footer className="border-t bg-card py-4 text-center text-sm text-muted-foreground flex-shrink-0">
+        <div className="container mx-auto px-4">
+          © {new Date().getFullYear()} • Built with ❤️ using{' '}
+          <a
+            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+              typeof window !== 'undefined' ? window.location.hostname : 'unknown-app'
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            caffeine.ai
+          </a>
         </div>
       </footer>
     </div>
